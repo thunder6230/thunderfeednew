@@ -3,15 +3,21 @@
         <ul class="divide-y divide-gray-100">
             <li
                 v-for="(contact, index) in contacts" :key="contact.id" 
-                class="flex px-4 py-2 w-full items-center hover:bg-gray-100 cursor-pointer"
+                class="flex px-4 py-2 w-full items-center hover:bg-gray-100 cursor-pointer relative"
                 v-bind:data-id="contact.id"
                 @click="selectContact(index, contact)"
                 :class="{ 'bg-gray-100 border-x border-gray-500': index == selected}"
-                id="contactBtn"
-                >
-                <img v-bind:src="'/storage/' + contact.profile_picture" alt="" class="rounded-full w-8 mr-5">
-                <p class="">{{ contact.name }}</p>
+                >   
+                <div>
+                    <img v-bind:src="'/storage/' + contact.profile_picture" alt="" class="rounded-full w-8 mr-5">
+                    <p class="">{{ contact.name }}</p>
+                </div>
+                <div v-if="unreadMessages.length > 0" class="w-8 rounded-full bg-red-500 absolut">
+                    <p class="text-white font-medium">2</p>
+                </div>
+                    
             </li>
+            
         </ul>
     </div>
 </template>
@@ -19,7 +25,7 @@
 
 <script>
     export default {
-        props:['contacts', 'messages'],
+        props:['contacts', 'messages', 'unreadMessages'],
         data(){
             return{
                 selected : null

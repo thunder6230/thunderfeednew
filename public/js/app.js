@@ -1866,7 +1866,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       selectedContact: null,
       messages: [],
-      contacts: []
+      contacts: [],
+      unreadMessages: []
     };
   },
   mounted: function mounted() {
@@ -1876,7 +1877,7 @@ __webpack_require__.r(__webpack_exports__);
       _this.handleIncoming(e.message);
     });
     axios.get('/api/users').then(function (resp) {
-      return _this.contacts = resp.data;
+      _this.contacts = resp.data;
     });
   },
   methods: {
@@ -1888,11 +1889,19 @@ __webpack_require__.r(__webpack_exports__);
         _this2.selectedContact = contact;
       });
     },
-    saveNewMessage: function saveNewMessage(text) {
-      this.messages.push(text);
+    saveNewMessage: function saveNewMessage(message) {
+      this.messages.push(message);
     },
     handleIncoming: function handleIncoming(message) {
-      console.log(message);
+      //if the new message is from the current selected contact
+      if (this.selectedContact && message.user_id == this.selectedContact.id) {
+        this.saveNewMessage(message); //update message to read
+        // axios.post('api/conversation/' . message.id).then(resp => {
+        //     if(resp.status == 200){
+        //         return
+        //     }
+        // }).catch(error => console.log(error))
+      }
     }
   },
   components: {
@@ -1933,8 +1942,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['contacts', 'messages'],
+  props: ['contacts', 'messages', 'unreadMessages'],
   data: function data() {
     return {
       selected: null
@@ -65943,7 +65958,10 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("ContactList", {
-            attrs: { contacts: _vm.contacts },
+            attrs: {
+              contacts: _vm.contacts,
+              unreadMessages: _vm.unreadMessages
+            },
             on: { selected: _vm.startConversationWith }
           })
         ],
@@ -65985,11 +66003,11 @@ var render = function() {
           {
             key: contact.id,
             staticClass:
-              "flex px-4 py-2 w-full items-center hover:bg-gray-100 cursor-pointer",
+              "flex px-4 py-2 w-full items-center hover:bg-gray-100 cursor-pointer relative",
             class: {
               "bg-gray-100 border-x border-gray-500": index == _vm.selected
             },
-            attrs: { "data-id": contact.id, id: "contactBtn" },
+            attrs: { "data-id": contact.id },
             on: {
               click: function($event) {
                 return _vm.selectContact(index, contact)
@@ -65997,12 +66015,26 @@ var render = function() {
             }
           },
           [
-            _c("img", {
-              staticClass: "rounded-full w-8 mr-5",
-              attrs: { src: "/storage/" + contact.profile_picture, alt: "" }
-            }),
+            _c("div", [
+              _c("img", {
+                staticClass: "rounded-full w-8 mr-5",
+                attrs: { src: "/storage/" + contact.profile_picture, alt: "" }
+              }),
+              _vm._v(" "),
+              _c("p", {}, [_vm._v(_vm._s(contact.name))])
+            ]),
             _vm._v(" "),
-            _c("p", {}, [_vm._v(_vm._s(contact.name))])
+            _vm.unreadMessages.length > 0
+              ? _c(
+                  "div",
+                  { staticClass: "w-8 rounded-full bg-red-500 absolut" },
+                  [
+                    _c("p", { staticClass: "text-white font-medium" }, [
+                      _vm._v("2")
+                    ])
+                  ]
+                )
+              : _vm._e()
           ]
         )
       }),

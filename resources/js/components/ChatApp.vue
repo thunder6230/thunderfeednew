@@ -4,7 +4,7 @@
         <h1 class="text-2xl font-bold text-right">ThunderFeed Messenger</h1>
         <div class="flex h-full absolute w-full top-0 pt-12 overflow-hidden">
             <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage"/>
-            <ContactList :contacts="contacts" @selected="startConversationWith" />
+            <ContactList :contacts="contacts" @selected="startConversationWith" :unreadMessages="unreadMessages"/>
         </div>
     </div>
 </template>
@@ -20,6 +20,7 @@ import ContactList from './ContactList'
                 selectedContact: null,
                 messages: [],
                 contacts: [],
+                unreadMessages:[]
             }
         },
         mounted() {
@@ -28,7 +29,11 @@ import ContactList from './ContactList'
                     this.handleIncoming(e.message)
                 }))
             axios.get('/api/users')
-            .then(resp => this.contacts = resp.data)
+            .then(resp => {
+                this.contacts = resp.data
+            })
+            
+
 
         },
         methods:{
@@ -39,11 +44,22 @@ import ContactList from './ContactList'
                     this.selectedContact = contact
                 })
             },
-            saveNewMessage(text){
-                this.messages.push(text)
+            saveNewMessage(message){
+                this.messages.push(message)
             },
             handleIncoming(message) {
-                console.log(message)
+                //if the new message is from the current selected contact
+                if(this.selectedContact && message.user_id == this.selectedContact.id){
+                    this.saveNewMessage(message)
+                    
+                    //update message to read
+                    // axios.post('api/conversation/' . message.id).then(resp => {
+                    //     if(resp.status == 200){
+                    //         return
+                    //     }
+                    // }).catch(error => console.log(error))
+                }
+               
             }
         },
         components: { Conversation , ContactList }
