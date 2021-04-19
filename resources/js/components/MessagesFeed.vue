@@ -1,10 +1,8 @@
 <template>
-    <div class="max-h-full absolute bottom-12 top-4 w-full"
-        ref="feed"  
-        @click="showMessageTime" @mouseenter="showsScrollbar" @mouseleave="hideScrollbar">
-        
-        
-        
+    <div class="max-h-full absolute bottom-12 top-4 w-full" ref="feed"  
+        @click="showMessageTime"
+        @mouseenter="showsScrollbar"
+        @mouseleave="hideScrollbar">
         <ul v-if="contact" class="flex flex-col">
             <li v-for="message in messages" 
                 :class="`m-2 ${message.user_id == contact.id ? 'text-left' : 'text-right'}`"

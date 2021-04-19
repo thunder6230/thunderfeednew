@@ -3,8 +3,8 @@
     <div class="container bg-gray-200 h-5/6 relative shadow-lg">
         <h1 class="text-2xl font-bold text-right">ThunderFeed Messenger</h1>
         <div class="flex h-full absolute w-full top-0 pt-12 overflow-hidden">
-            <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage"/>
-            <ContactList :contacts="contacts" @selected="startConversationWith" :unreadMessages="unreadMessages"/>
+            <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage" />
+            <ContactList :contacts="contacts" @selected="startConversationWith" />
         </div>
     </div>
 </template>
@@ -20,7 +20,6 @@ import ContactList from './ContactList'
                 selectedContact: null,
                 messages: [],
                 contacts: [],
-                unreadMessages:[]
             }
         },
         mounted() {
@@ -32,12 +31,10 @@ import ContactList from './ContactList'
             .then(resp => {
                 this.contacts = resp.data
             })
-            
-
-
         },
         methods:{
             startConversationWith(contact){
+                contact.unread = 0
                 axios.get('/api/conversation/' + contact.id)
                 .then(resp => {
                     this.messages = resp.data
@@ -48,18 +45,23 @@ import ContactList from './ContactList'
                 this.messages.push(message)
             },
             handleIncoming(message) {
-                //if the new message is from the current selected contact
                 if(this.selectedContact && message.user_id == this.selectedContact.id){
-                    this.saveNewMessage(message)
-                    
-                    //update message to read
-                    // axios.post('api/conversation/' . message.id).then(resp => {
-                    //     if(resp.status == 200){
-                    //         return
-                    //     }
-                    // }).catch(error => console.log(error))
+                    axios.put('/api/messages/' + message.id)
+                    .then(resp => this.saveNewMessage(resp.data))
+                    .catch(error => console.log(error))
+                    return
                 }
-               
+                this.setMessageUnread(message)
+                
+            },
+            setMessageUnread(message){
+                let contacts = Object.keys(this.contacts)
+                contacts.forEach((key,index) => {
+                    let contact = this.contacts[key]
+                    if(contact.id == message.user_id){
+                        this.contacts[index].unread++
+                    }
+                })
             }
         },
         components: { Conversation , ContactList }

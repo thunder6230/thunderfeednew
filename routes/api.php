@@ -21,10 +21,12 @@ use App\Http\Controllers\Api\MessageController;
 */
 Route::get('/contacts/{user}', [ContactController::class, 'get']);
 Route::get('/users', [ContactController::class, 'getAll']);
+
 Route::get('/conversation/{user}', [MessageController::class, 'getMessages']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/conversation', [MessageController::class, 'store']);
+    Route::put('/messages/{id}', [MessageController::class, 'update']);
     Route::delete('/conversation/{id}', [MessageController::class, 'destroy']);
 });
 

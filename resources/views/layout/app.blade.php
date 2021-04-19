@@ -27,11 +27,11 @@
                     <a href="{{route('user.messages', Auth::user())}}">Messages</a>
 
 
-                    {{-- @if (Auth::user()->messages->count() > 0) --}}
+                    @if ( $unreadMessages > 0)
                         <div class="notificationLabel">
-                            <p class="labelContent">1</p>
+                            <p class="labelContent">{{$unreadMessages}}</p>
                         </div>
-                    {{-- @endif --}}
+                    @endif
                 </div>
             </li>
             <li>
@@ -85,10 +85,11 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const notificationButton = document.getElementById('notificationBtn')
+        if(notificationButton){
             notificationButton.addEventListener('click', (e) => {
                 e.target.parentElement.querySelector('#notificationDiv').classList.toggle('hidden');
             })
-
+        }
     })
 </script>
 
