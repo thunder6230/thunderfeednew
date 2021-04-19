@@ -9,10 +9,16 @@ use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
+    /**
+     * Only for logged in user
+     */
     public function __construct(){
         $this->middleware(['auth']);
     }
-    public function index(User $user){
+    /**
+     * rendering the nptifications view element with the unreadmessages count and the user Object
+     */
+    public function index(user $user){
         $unreadMessages = Message::select()->where('user_to_id', Auth::user()->id)->where('read_at', null)->count();
 
         return view('notifications.index', [

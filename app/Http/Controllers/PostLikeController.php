@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Notification;
 
 class PostLikeController extends Controller
 {
+
+    /**
+     * Save the like to database. If the user already liked it can not be done again unless unlike it. After the data has been stored we send email and notification to the owner
+     */
     public function store(Post $post){
 
         if($post->userLiked(Auth::user())){
@@ -28,7 +32,9 @@ class PostLikeController extends Controller
         $post->user->notify(new PostLikedNotification($post, Auth::user()));
         return back();
     }
-
+    /**
+     * Unlike method. Only if the user liked it
+     */
     public function destroy(Post $post){
         if($post->userLiked(Auth::user())){
             PostLike::where('user_id', Auth::user()->id)->delete();

@@ -23,10 +23,7 @@
             @auth
             <li>
                 <div class="relative mr-3">
-
                     <a href="{{route('user.messages', Auth::user())}}">Messages</a>
-
-
                     @if ( $unreadMessages > 0)
                         <div class="notificationLabel">
                             <p class="labelContent">{{$unreadMessages}}</p>
@@ -57,7 +54,7 @@
             @endauth
         </ul>
 
-        <ul class="flex px-2 items-center">
+        <ul class="flex px-2 items-center justify-end">
             @auth
             <li class="mr-3">
                 <a href="{{route('profile', Auth::user())}}">

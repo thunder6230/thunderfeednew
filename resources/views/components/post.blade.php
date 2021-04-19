@@ -20,7 +20,7 @@
             </form>
         @endif
     </div>
-    <p>{{$post->body}}</p>
+    <p>{!! ($post->body) !!}</p>
     <img src="{{ asset('storage/' . $post->image_path)  }}" alt="" class="rounded">
     <div class="flex justify-around">
         <p>{{ $post->likes()->count()}} {{Str::plural('Like', $post->likes()->count())}}</p>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Message;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class PostController extends Controller
     }
     
     /**
-     * We get all the posts from the database with eager loading to make more efficient the query. We check the onread messages count as well and pass both values to the view element.
+     * We get all the posts from the database with eager loading to make more efficient the query. We check the unread messages count as well and pass both values to the view element.
      */
     public function index(){
         $posts = Post::with(['user', 'likes', 'postComments'])->get()->reverse();
@@ -47,16 +48,13 @@ class PostController extends Controller
             'user_to' => '',
 
         ]);
-          
-            
         if($request->image){
             $imageName = "post_images/" . time() . '.' . $request->image->extension();
             $request->image->storeAs('public/', $imageName);
 
         }
-
         Auth::user()->posts()->create([
-            'body' => $request->body,
+            'body' => nl2br(e($request->body)),
             'image_path' => $imageName ?? null,
             'user_to_id' => $request->user_to ?? null
         ]);

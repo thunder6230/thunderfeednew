@@ -12,6 +12,9 @@ use App\Notifications\PostCommentedNotification;
 
 class PostCommentController extends Controller
 {
+    /**
+     * Save the comment to the database. Like the at the post the body is required and the picture is optional. After comment we send an email and a notification to the owner.
+     */
     public function store(Request $request, Post $post){
 
         $this->validate($request, [
