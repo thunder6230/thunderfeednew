@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>ThunderFeed</title>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
@@ -14,7 +15,7 @@
 </head>
 
 <body class="min-h-screen bg-yellow-50 w-full absolute h-full box-border">
-    <nav class="flex justify-between bg-blue-700 px-4 py-4 text-white items-center fixed w-full top-0 h-13">
+    <nav class="flex justify-between bg-blue-700 px-4 py-4 text-white items-center fixed w-full top-0 h-13 z-50">
         <ul class="flex px-2">
             <li><a href="{{route('home')}}" class="mr-3">Home</a></li>
             <li><a href="{{route('posts')}}" class="mr-3">Posts</a></li>
@@ -80,14 +81,5 @@
     </div>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const notificationButton = document.getElementById('notificationBtn')
-        if(notificationButton){
-            notificationButton.addEventListener('click', (e) => {
-                e.target.parentElement.querySelector('#notificationDiv').classList.toggle('hidden');
-            })
-        }
-    })
 </script>
-
 </html>

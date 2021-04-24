@@ -1,6 +1,6 @@
 <template>
     <div class="conversation w-10/12 bg-gray-100 relative">
-        <h1 class="font-xl">{{contact ? `Conversation with ${contact.name}` : "Select a Contact"}}</span></h1>
+        <h1 class="font-xl">{{contact ? `Conversation with ${contact.name}` : "Select a Contact"}}</h1>
         <MessagesFeed :contact="contact" :messages="messages" />
         <MessageComposer @send="sendMessage" />
     </div>

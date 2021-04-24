@@ -14,7 +14,6 @@ import Conversation from './Conversation'
 import ContactList from './ContactList'
     export default {
         props: ['user'],
-        
         data(){
             return{
                 selectedContact: null,

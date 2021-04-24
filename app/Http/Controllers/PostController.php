@@ -66,7 +66,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post){
         if(Auth::user() != $post->user){
-            response('', 409);
+            return response('', 409);
         }
         $post->delete();
         return back();
