@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Like;
 use App\Models\Post;
 use App\Mail\PostLiked;
 use App\Models\PostLike;
@@ -16,22 +17,28 @@ class PostLikeController extends Controller
     public function store(Request $request){
        
         $post = Post::find($request->post_id);
-        $like = $post->likes()->create(['user_id' => Auth::user()->id]);
-        if(!$like){
-            echo "Error";
-        }
+
+        $like = Like::create([
+            'user_liked_id' => Auth::user()->id,
+            'likeable_id' => $post->id,
+            'likeable_type' => 'App\Models\Post',
+            'type' => "like"
+        ]);
+        
         if(Auth::user() != $post->user){
             Mail::to($post->user->email)->send(new PostLiked($post, Auth::user()));
             $post->user->notify(new PostLikedNotification($post, Auth::user()));
         }
-        return response()->json(PostLike::find($like->id));
-    // return response(true);
+        
+        return response()->json($like);
     }
     public function destroy($id){
-
-        if(!Post::find($id)->likes()->where('user_id', Auth::user()->id)->delete()){
-            echo "Error";
-        }
-        return response()->json(['like_id' => $id, 'isLikedByMe' => false]);
+        
+        Like::where("likeable_type", "App\Models\Post")
+                ->where('likeable_id', $id)
+                ->where('user_liked_id', Auth::user()->id)
+                ->delete();
+        
+        return response('like has been deleted');
     }
 }

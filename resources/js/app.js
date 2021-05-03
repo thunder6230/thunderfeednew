@@ -17,13 +17,17 @@ require('./bootstrap');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
+/**
+ * All the different Vue Apps for pages
+ */
 Vue.component('chat-app', require('./components/ChatApp/ChatApp.vue').default);
-Vue.component('contact-list', require('./components/ChatApp/ContactList.vue').default);
-Vue.component('conversation', require('./components/ChatApp/Conversation.vue').default);
-
 Vue.component('posts-app', require('./components/PostsApp/PostsApp.vue').default);
-Vue.component('add-post-component', require('./components/PostsApp/AddPost.vue').default);
-Vue.component('posts-component', require('./components/PostsApp/PostsComponent.vue').default);
+Vue.component('post', require('./components/PostsApp/Post.vue').default)
+Vue.component('posts-component', require('./components/PostsApp/PostsComponent.vue').default)
+Vue.component('show-single-post', require('./components/PostsApp/ShowSinglePost.vue').default);
+Vue.component('profile-page', require('./components/ProfileApp/ProfilePage.vue').default);
+
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -4,7 +4,7 @@
             <div class="flex">
                 <div class="p-1 flex">
                     <div class="imageDiv mr-2">
-                        <img src="{{asset('storage/' . $notification->data['user']['profile_picture'])}}"
+                        <img src="{{asset('storage/' . $notification->data['user']['picture']['url'])}}"
                             class="w-8 mt-1 rounded-full" alt="">
                     </div>
                     <div class="text-xs">

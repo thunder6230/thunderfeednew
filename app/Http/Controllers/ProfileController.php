@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Models\User;
 use App\Models\Friend;
 use App\Models\Message;
@@ -16,9 +17,9 @@ class ProfileController extends Controller
      */
     public function index(User $user){
         $unreadMessages = Message::select()->where('user_to_id', Auth::user()->id)->where('read_at', null)->count();
-        return view('profile.index', [
-            'user' => $user,
-            'unreadMessages' => $unreadMessages
-        ]);
+        // $user = User::where('id', $user->id);
+        $users = ['userProfile' => $user, 'userLoggedIn' => Auth::user()];
+        return view('profile.index', compact('unreadMessages', 'users'));
     }
+
 }

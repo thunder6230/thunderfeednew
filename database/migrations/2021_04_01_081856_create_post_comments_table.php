@@ -17,7 +17,6 @@ class CreatePostCommentsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->unsigned()->index();
             $table->foreignId('post_id')->unsigned()->index();
-            $table->string('comment_picture')->nullable();
             $table->text('body');
             $table->timestamps();
         });

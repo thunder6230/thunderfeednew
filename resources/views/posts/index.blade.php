@@ -1,20 +1,12 @@
 @extends('layout.app')
 
 @section('content')
-<div id="app">
-    <posts-app :user="{{Auth::user()}}"></posts-app>
+<div id="app" class="container 2xl:w-10/12 m-auto">
+    @auth
+    <posts-app :user="{{ Auth::user() }}"></posts-app>
+    @endauth
+    @guest
+        <posts-app></posts-app>
+    @endguest    
 </div>
 @endsection
-
-{{-- <script>
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const postContainers = document.querySelectorAll('#postContainer')
-        
-        postContainers.forEach(post => post.addEventListener('click', (e) => {
-            if(e.target.getAttribute('id') == "showCommentsBtn") {
-                post.querySelector('#postComments').classList.toggle('hidden')
-            }
-        }))
-    })
-</script> --}}

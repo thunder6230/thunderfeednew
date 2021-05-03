@@ -25,9 +25,9 @@
         "sass": "^1.20.1",
         "sass-loader": "^8.0.0",
         "tailwindcss": "^2.1.1",
-        "vue": "^2.5.17",
+        "vue": "^2.6.12",
         "vue-loader": "^15.9.5",
-        "vue-template-compiler": "^2.6.10"
+        "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
         "laravel-echo": "^1.10.0",

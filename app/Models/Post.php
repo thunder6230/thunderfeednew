@@ -14,9 +14,8 @@ class Post extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
-
-    public function likes(){
-        return $this->hasMany(PostLike::class);
+    public function user_to(){
+        return $this->belongsTo(User::class, 'user_to_id');
     }
     
     public function userLiked(User $user){
@@ -25,6 +24,14 @@ class Post extends Model
 
     public function postComments(){
         return $this->hasMany(PostComment::class);
+    }
+    public function picture()
+    {
+        return $this->morphOne(Picture::class, 'pictureable');
+    }
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
     }
 
 }

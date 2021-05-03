@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\Post;
+use App\Models\Picture;
+use App\Models\PostComment;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class PostCommentsController extends Controller
 {
@@ -11,19 +15,24 @@ class PostCommentsController extends Controller
         $this->validate($request, [
             'body' => 'required|',
             'image' => 'image',
-            'user_to' => '',
         ]);
+        $comment = Post::find($id)->postComments()->create([
+            'user_id' => Auth::user()->id,
+            'body' => $request->body,
+            ]);
         if ($request->file) {
             $imageName = "post_images/" . time() . '.' . $request->file->extension();
             $request->file->storeAs('public/', $imageName);
+
+            Picture::create([
+                'pictureable_id' => $comment->id,
+                'pictureable_type' => 'App\Models\PostComment',
+                'url' => $imageName
+            ]);
         }
-        $post = Auth::user()->posts()->create([
-            'body' => $request->body,
-            'image_path' => $imageName ?? null,
-            'user_to_id' => $request->user_to ?? null
-        ]);
-        $comment = Post::find($id)->comments()->create(['user_id']) 
-        return response()->json($id);
+        $comment = PostComment::find($comment->id);
+
+        return response()->json($comment);
     }
     public function update(){
 

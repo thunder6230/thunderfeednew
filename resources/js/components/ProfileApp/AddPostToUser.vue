@@ -17,7 +17,7 @@
 
 <script>
 export default {
-    props: ['csrf'],
+    props: ['props'],
     data(){
         return{
             errors: {},
@@ -40,7 +40,8 @@ export default {
             if (this.file){
                 formData.append('file', this.file)
             }
-            formData.append('_token', this.csrf)
+            formData.append('user_to_id', this.props.userProfile.id)
+            formData.append('_token', this.props.csrf)
             formData.append('body', this.$refs.body.value)
 
             /**

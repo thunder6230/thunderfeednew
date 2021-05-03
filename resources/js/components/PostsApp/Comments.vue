@@ -5,12 +5,15 @@
         user: props.user,
         csrf: props.csrf
     }" :class="{'hidden' : allCommentsHidden && index < props.comments.length - 2 }" />
-    <p v-on:click="showHideComments" v-if="props.comments.length > 2" class="font-medium pb-2 cursor-pointer">Show All Comments</p>
+    <p 
+        v-on:click="showHideComments"
+        v-if="props.comments.length > 2 && allCommentsHidden == true" 
+        class="font-medium pb-2 cursor-pointer">Show All Comments</p>
     <AddComment :props="{
         postId: props.postId,
         user: props.user,
         csrf: props.csrf
-    }" v-if="props.user" @newComment="addComment"/>
+    }" @newComment="addComment" />
 </div>
 </template>
 
@@ -25,6 +28,7 @@ export default {
         }
     },
     mounted(){
+        // console.log(this.props)
     },
     methods:{
         showHideComments(){
@@ -32,7 +36,7 @@ export default {
         },
         addComment(comment){
             this.props.comments.push(comment)
-        }
+        },
     },
     components: { Comment, AddComment }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Picture;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -44,14 +45,20 @@ class RegisterController extends Controller
             // 'password'=> 'required|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
             'password' => 'required|min:8',
         ]);
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'gender' => $request->gender,
-            'profile_picture' => $this->profilePicture($request->gender)
         ]);
+
+        Picture::create([
+            'pictureable_id' => $user->id,
+            'pictureable_type' => 'App\Models\User',
+            'url' => $this->profilePicture($request->gender)
+        ]);
+
         
         Auth::attempt($request->only(['email', 'password']));
         Auth::user()->createToken('user-access');

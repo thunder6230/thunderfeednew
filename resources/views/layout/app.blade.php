@@ -36,7 +36,7 @@
                 @if (Auth::user()->unreadNotifications->count() > 0)
                     <div class="relative">
                         <button id="notificationBtn">Notifications</button>
-                        <div class="notificationDiv bg-white border border-blue-200 rounded shadow-md hidden" id="notificationDiv">
+                        {{-- <div class="notificationDiv bg-white border border-blue-200 rounded shadow-md hidden" id="notificationDiv">
                             @foreach (Auth::user()->unreadNotifications as $notification)
                                     <x-nav-notification :notification="$notification" />
                             @endforeach
@@ -46,7 +46,7 @@
                         </div>
                         <div class="notificationLabel">
                             <p class="labelContent">{{Auth::user()->unreadNotifications->count()}}</p>
-                        </div>
+                        </div> --}}
                     </div>
                 @else
                     <a href="{{route('user.notifications', Auth::user())}}">Notifications</a>
@@ -60,7 +60,7 @@
             <li class="mr-3">
                 <a href="{{route('profile', Auth::user())}}">
                     <div class="flex mr-3 justify-center items-center">
-                            <img src="{{asset('storage/' . Auth::user()->profile_picture)}}" alt="" class="rounded-full w-7 mr-2">
+                            <img src="{{asset('storage/' . Auth::user()->picture->url)}}" alt="" class="rounded-full w-7 mr-2">
                         {{Auth::user()->name}}
                     </div>
                 </a>
@@ -76,7 +76,7 @@
     </nav>
     {{-- <nav>Mobile Menu</nav> --}}
 
-    <div class="container xs:w-11/12 sm:w-10/12 md:w-9/12 lg:w-8/12 xl:w-8/12 2xl:w-6/12 mt-16 mx-auto min-h-3/4 h-5/6">
+    <div class="container xs:w-11/12 sm:w-10/12 md:w-9/12 lg:w-8/12 xl:w-8/12 2xl:w-8/12 mt-16 mx-auto min-h-3/4 h-5/6">
         @yield('content')
     </div>
 </body>

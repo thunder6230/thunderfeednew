@@ -27,6 +27,8 @@ Route::get('/users', [ContactController::class, 'getAll']);
 
 
 Route::get('/getposts', [PostsController::class, 'getposts']);
+Route::get('/getuserposts', [PostsController::class, 'getUserPosts']);
+Route::get('/getmoreposts', [PostsController::class, 'loadMorePosts']);
 
 //Private Endpoint only for authenticated users
 Route::group(['middleware' => ['auth:sanctum']], function () {

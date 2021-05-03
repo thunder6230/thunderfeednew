@@ -25,7 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'username',
-        'profile_picture'
+        'gender'
     ];
 
     /**
@@ -59,29 +59,35 @@ class User extends Authenticatable
     public function comments(){
         return $this->hasMany(PostComment::class);
     }
+    public function picture()
+    {
+        return $this->morphOne(Picture::class, 'pictureable');
+    }
 
     // public function isMyFriend(){
     //     return $this->belongsToMany(User::class, 'user_friend', 'user_id', 'friend_id');
     // }
     public function friends(){
-        return $this->hasMany(Friend::class);
+        return $this->belongsToMany(Friend::class)
+        // ->withPivot('accepted')
+        ;
     }
 
-    public function isMyFriend(User $user){
-        return $this->friends->where('friend_id', $user->id);
-    }
+    // public function isMyFriend(User $user){
+    //     return $this->friends->where('friend_id', $user->id);
+    // }
     
    
-    public function isMyAcceptedFriend(User $user){
-        return $this->isMyfriend($user)->where('accepted_at', !null);
-    }
+    // public function isMyAcceptedFriend(User $user){
+    //     return $this->isMyfriend($user)->where('accepted_at', !null);
+    // }
 
-    public function isMyAcceptedFriendById($id)
-    {
-        $user = User::find($id);
-        return $this->friends->where('friend_id', $user->id)->where('accepted_at', !null);
+    // public function isMyAcceptedFriendById($id)
+    // {
+    //     $user = User::find($id);
+    //     return $this->friends->where('friend_id', $user->id)->where('accepted_at', !null);
         
-    }
+    // }
     
     public function messages(){
         return $this->hasMany(Message::class);

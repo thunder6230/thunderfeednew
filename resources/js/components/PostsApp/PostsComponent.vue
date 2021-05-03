@@ -1,11 +1,11 @@
 <template>
 <div>
-    <p v-if="props.posts.length == 0">Be your Post be the First!</p>
+    <h1 v-if="props.isLoading == false && props.posts.length == 0" class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">Be your Post be the First!</h1>
     <Post v-for="post in props.posts" :key="post.id" :props="{
         post: post,
         user: props.user,
         csrf: props.csrf
-        }" @deletePost="deletePost"/>
+        }"/>
 </div>
   
 </template>
@@ -15,11 +15,6 @@ import Post from './Post.vue'
 import Comments from './Comments.vue'
 export default {
     props: ['props'],
-    methods:{
-        deletePost(post){
-            this.$emit('deletePost', post)
-        }
-    },
     components: {Post, Comments}
 }
 </script>

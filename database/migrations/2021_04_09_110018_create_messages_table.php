@@ -18,6 +18,7 @@ class CreateMessagesTable extends Migration
             $table->foreignId('user_id')->unsigned()->index()->onDelete('cascade');
             $table->foreignId('user_to_id')->unsigned()->index()->onDelete('cascade');
             $table->text('body');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }

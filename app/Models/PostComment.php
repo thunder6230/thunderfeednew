@@ -15,4 +15,12 @@ class PostComment extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+    public function picture()
+    {
+        return $this->morphOne(Picture::class, 'pictureable');
+    }
+    public function like()
+    {
+        return $this->morphOne(Like::class, 'likeable');
+    }
 }

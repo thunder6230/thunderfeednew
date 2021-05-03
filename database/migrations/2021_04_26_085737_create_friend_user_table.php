@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddReadAtColumnToMessagesTable extends Migration
+class CreateFriendUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddReadAtColumnToMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::table('messages', function (Blueprint $table) {
-            $table->timestamp('read_at')->nullable();
+        Schema::create('friend_user', function (Blueprint $table) {
+            $table->foreignId('user_id');
+            $table->foreignId('friend_id');
         });
     }
 
@@ -25,8 +26,6 @@ class AddReadAtColumnToMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::table('messages', function (Blueprint $table) {
-            $table->dropIfExists('read_at');
-        });
+        Schema::dropIfExists('friend_user');
     }
 }
