@@ -22,7 +22,8 @@ class RegisterController extends Controller
      * returns the register view element
      */
     public function index(){
-        return view('auth.register');
+        $userWithAllData = 0;
+        return view('auth.register', compact('userWithAllData'));
     }
     /**
      * a function to decide the default profile picture

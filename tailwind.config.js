@@ -12,9 +12,16 @@ module.exports = {
       'xs': '475px',
       ...defaultTheme.screens,
     },
+    extend:{
+      width: {
+        '3/10': '30%',
+      }
+    }
   },
   variants: {
-    extend: {},
+    extend: {
+      fontSize: ['hover']
+    },
   },
   plugins: [],
 }

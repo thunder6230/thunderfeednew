@@ -2,7 +2,7 @@
     <form ref="form" enctype="multipart/form-data" @submit.prevent="submit" class="relative">
         <input type="text" name="body" :id="`body${props.postId}`" class="w-full border border-blue-200 rounded-xl px-4 py-2" placeholder="What's in you mind?" ref="body">
 
-        <label for="image"
+        <label :for="`file${props.postId}`"
         class="cursor-pointer bg-transparent px-2.5 py-0 text-blue-700 text-2xl absolute right-11 top-1.5 border-r border-blue-200">
             <i class="fas fa-image"></i>
         </label>
@@ -21,20 +21,37 @@ export default {
             file: null
         }
     },
+    watch: {
+        isWriteComment(newVal, oldVal){
+            if(newVal){
+                console.log('fityma')
+                this.$refs.body.focus()
+            }
+        }
+    },
     methods:{
         submit(){
-            const params = {
-                '_token': this.props.csrf,
-                'body': this.$refs.body.value,
-                'file': this.file ?? "",
+            const formData = new FormData()
+            if (this.file){
+                formData.append('file', this.file)
             }
-            axios.post(`/api/posts/${this.props.postId}/comment`, params)
-            .then(resp => this.$emit("newComment", resp.data))
+            formData.append('_token', this.props.csrf)
+            formData.append('body', this.$refs.body.value)
+
+            axios.post(`/api/posts/${this.props.postId}/comment`, formData)
+            .then(resp => {
+                this.$emit("newComment", resp.data[0])
+                this.file = null
+                this.$refs.body.value = ""
+            })
             .catch(error => error.response)
         },
         handleFileInput(event){
-            console.log('image added')
-        }
+            console.log('file added')
+            this.file = event.target.files[0]
+        },
+
+
     }
 }
 </script>

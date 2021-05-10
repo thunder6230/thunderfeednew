@@ -1,6 +1,6 @@
 
 <template>
-    <div class="container bg-gray-200 h-5/6 relative shadow-lg">
+    <div class="container bg-gray-200 h-4/6 relative shadow-lg" :style="{ minHeight: 600 + 'px'}">
         <h1 class="text-2xl font-bold text-right">ThunderFeed Messenger</h1>
         <div class="flex h-full absolute w-full top-0 pt-12 overflow-hidden">
             <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage" />
@@ -66,3 +66,6 @@ import ContactList from './ContactList'
         components: { Conversation , ContactList }
     }
 </script>
+<style >
+   
+</style>

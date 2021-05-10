@@ -6,11 +6,11 @@ use App\Models\Friend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PostsController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\MessageController;
-use App\Http\Controllers\Api\PostCommentsController;
-use App\Http\Controllers\Api\PostLikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,12 +23,14 @@ use App\Http\Controllers\Api\PostLikeController;
 |
 */
 Route::get('/users', [ContactController::class, 'getAll']);
+Route::get('/allusers', [ContactController::class, 'getAllUsers']);
 
 
 
 Route::get('/getposts', [PostsController::class, 'getposts']);
 Route::get('/getuserposts', [PostsController::class, 'getUserPosts']);
 Route::get('/getmoreposts', [PostsController::class, 'loadMorePosts']);
+Route::get('/user_pictures', [PostsController::class, 'userPictures']);
 
 //Private Endpoint only for authenticated users
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -43,12 +45,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/posts', [PostsController::class, 'store']);
     Route::get('/posts/{post}', [PostsController::class, 'show']);
     Route::delete('/posts/{id}', [PostsController::class, 'destroy']);
-    //endpoint for Post Likes
-    Route::post('/posts/like', [PostLikeController::class, 'store']);
-    Route::delete('/posts/{id}/like', [PostLikeController::class, 'destroy']);
-    //endpoints for Post Comments
-    Route::post('/posts/{id}/comment', [PostCommentsController::class, 'store']);
-    Route::delete('/posts/{id}/comment', [PostCommentsController::class, 'destroy']);
+
+    //endpoint for Post Likes, Comment Likes Picture likes and Reply likes
+    Route::post('/posts/like', [LikeController::class, 'storePostLike']);
+    Route::post('/comments/like', [LikeController::class, 'storeCommentLike']);
+    Route::post('/pictures/{id}/like', [LikeController::class, 'storeCommentLike']);
+    Route::delete('/like/{id}/unlike', [LikeController::class, 'destroy']);
+
+    //endpoints for Post Comments, Picture Comments and Comment replies
+    Route::post('/posts/{id}/comment', [CommentController::class, 'storePostComment']);
+    Route::post('/posts/comments/{id}/like', [LikeController::class, 'storePostComment']);
+    Route::post('/picture/{id}/comment', [CommentController::class, 'storePictureComment']);
+    Route::post('/comments/{id}/reply', [CommentController::class, 'storeCommentReply']);
+    Route::delete('/posts/comments/{id}', [CommentController::class, 'destroy']);
+
 });
 
 

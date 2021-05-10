@@ -14,8 +14,9 @@ class CreateFriendUserTable extends Migration
     public function up()
     {
         Schema::create('friend_user', function (Blueprint $table) {
-            $table->foreignId('user_id');
-            $table->foreignId('friend_id');
+            $table->foreignId('user_id')->unsigned()->index();
+            $table->foreignId('friend_id')->unsigned()->index();
+            $table->timestamp('accepted_at')->nullable();
         });
     }
 

@@ -9,35 +9,40 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class PostCommentsController extends Controller
+class CommentsController extends Controller
 {
     public function store($id, Request $request){
         $this->validate($request, [
-            'body' => 'required|',
-            'image' => 'image',
+            'body' => 'required',
+            'file' => 'image',
         ]);
         $comment = Post::find($id)->postComments()->create([
             'user_id' => Auth::user()->id,
             'body' => $request->body,
-            ]);
-        if ($request->file) {
-            $imageName = "post_images/" . time() . '.' . $request->file->extension();
-            $request->file->storeAs('public/', $imageName);
-
-            Picture::create([
-                'pictureable_id' => $comment->id,
-                'pictureable_type' => 'App\Models\PostComment',
-                'url' => $imageName
-            ]);
+        ]);
+        if($request->file) {
+            
+        $imageName = "Pictures/" . time() . '.' . $request->file->extension();
+        $request->file->storeAs('public/', $imageName);
+        
+        Picture::create([
+            'user_id' => Auth::user()->id,
+            'pictureable_id' => $comment->id,
+            'pictureable_type' => 'App\Models\Comment',
+            'url' => $imageName
+        ]);
         }
-        $comment = PostComment::find($comment->id);
-
+            
+        $comment = PostComment::where('id', $comment->id)->with('picture', 'user', 'user.picture')->get();
         return response()->json($comment);
     }
     public function update(){
 
     }
-    public function delete(){
-
+    public function destroy($id){
+        if(!PostComment::findOrFail($id)->delete()){
+            return response(false);
+        }
+        return response($id);
     }
 }

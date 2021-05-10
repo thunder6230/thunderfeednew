@@ -1,10 +1,11 @@
 <template>
      <div class="container lg:w-8/12 m-auto pb-4">
-        <AddPostComponent v-if="user" :csrf="csrf" @newPost="addPost" />
+        <AddPostComponent v-if="auth == true" :csrf="csrf" @newPost="addPost" />
         <posts-component :props="{
             posts: posts,
             user: user,
             csrf: csrf,
+            auth: auth,
             loading: isLoading
         }"></posts-component>
         <h1 v-if="isLoading == true" class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">Loading...</h1>
@@ -35,12 +36,14 @@ export default {
             isLoading: true,
             isMorePosts: false,
             page: 1,
+            auth:false,
             posts: []
         }
     },
     mounted(){
         //get the posts for page 1
         this.getPosts()
+        this.auth = this.user != 0 ? true : false
     },
     methods:{
         addPost(post){

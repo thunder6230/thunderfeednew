@@ -1,0 +1,107 @@
+<template>
+  <div :class="`flex items-start relative pb-2 ${props.auth ? 'mb-2' : ''}`" ref="reply">
+        <div class="mr-2 flex-none">
+            <a :href="`/profile/${props.reply.username}`">
+                <img :src="`/storage/${props.reply.user.picture.url}`" alt="" class="rounded-full w-8">
+            </a>
+        </div>
+        <div class="bg-blue-50 px-2 pt-1 pb-2 rounded-lg">
+            <div>
+                <a :href="`/profile/${props.reply.username}`" class="text-sm font-medium">{{props.reply.user.name}}</a>
+                <vue-moments-ago prefix="" suffix="ago" v-bind:date="props.reply.created_at" lang="en" class="ml-5"></vue-moments-ago>
+            </div>
+            <div>
+                <p class="text-md leading-3">{{props.reply.body}}</p>
+                <img v-if="props.reply.picture != undefined" :src="`/storage/${props.comment.picture.url}`" alt="" class="rounded w-auto mr-2 pt-2">
+            </div>
+        </div>
+        <div class="flex absolute -bottom-1.5 left-12 text-xs text-blue-700 font-medium" v-if="props.auth">
+            <p class="mr-1 cursor-pointer" @click="like" v-if="!isLikedByMe">Like</p>
+            <p class="mr-1 cursor-pointer" @click="unlike" v-else>Unlike</p>
+            <p class="mr-1 cursor-pointer" @click="replyComment">Reply</p>
+            <p v-if="isMyComment" class="mr-1 cursor-pointer">Edit</p>
+            <p v-if="isMyComment" class="cursor-pointer" @click="confirmDelete(props.comment.id)" >Delete</p>
+        </div>
+  </div>
+</template>
+
+<script>
+
+import VueMomentsAgo from 'vue-moments-ago'
+export default {
+    props: ['props'],
+    data(){
+        return {
+            isMyComment: false,
+            isLikedByMe: false,
+            myLikeId: null,
+        }
+    },
+    mounted(){
+        if(this.props.user){
+            this.props.reply.likes.forEach(like => {
+                if(like.user_liked_id == this.props.user.id){
+                    this.isLikedByMe = true
+                    this.myLikeId = like.id
+                    return
+                }
+            })
+            this.isMyComment = this.props.user.id == this.props.reply.user_id ? true : false
+        }
+    },
+    methods: {
+   
+        confirmDelete(){
+            if(!confirm('Are you sure you want to delete?')){
+                return
+            }
+            this.deleteComment()
+        },
+        deleteComment(){
+            axios.delete(`/api/posts/comments/${this.props.comment.id}`)
+            .then(resp => {
+                if(resp.status == 200){
+                    this.$refs.comment.remove()
+                    this.$emit('removeComment', resp.data)
+                }
+            })
+            .catch(error => console.log(error.response))
+        },
+        like(){
+            const params = {
+                'comment_id': this.props.comment.id,
+                '_token': this.props.csrf
+            }
+            axios.post('/api/comments/like', params)
+            .then(resp => {
+                if(resp.status == 200){
+                    this.isLikedByMe = true
+                    this.myLikeId = resp.data.id
+                    this.props.reply.likes.push(resp.data)
+                }
+            })
+            .catch(err => console.log(err))
+        },
+        unlike(){
+            axios.delete(`/api/like/${this.myLikeId}/unlike`)
+            .then(resp => {
+                if (resp.status == 200){
+                    this.props.reply.likes = this.props.reply.likes.filter(like => like.id != this.myLikeId)
+                    this.isLikedByMe = false
+                    this.myLikeId = null
+                }
+                return
+            })
+            .catch(err => console.log(err))
+        },
+        replyComment(){
+            this.$emit('isWritingActive')
+        }
+    },
+    components: {VueMomentsAgo}
+}
+</script>
+
+<style>
+
+</style>

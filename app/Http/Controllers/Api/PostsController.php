@@ -19,9 +19,26 @@ class PostsController extends Controller
     public function getposts(Request $request){
         $page = $request->page;
         $limit = $page * 5;
-        return response()->json(Post::with('user', 'user.picture', 'user_to', 'likes', 'postComments', 'postComments.user', 'postComments.user.picture', 'picture')
-                            ->orderBy('created_at', 'DESC')
-                            ->limit($limit)->get());
+     
+        return response()->json(Post::with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )
+            ->orderBy('created_at', 'DESC')
+            ->limit($limit)->get());
     }
 
     public function getUserPosts(Request $request){
@@ -29,7 +46,23 @@ class PostsController extends Controller
         $user_id = $request->user_id;
         $limit = $page * 5;
 
-        return response()->json(Post::with('user', 'user.picture', 'user_to', 'likes', 'postComments', 'postComments.user', 'postComments.user.picture', 'picture')
+        return response()->json(Post::with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )
                             ->where('user_id', $user_id)
                             ->orWhere('user_to_id', $user_id)
                             ->orderBy('created_at', 'DESC')
@@ -41,7 +74,23 @@ class PostsController extends Controller
         $limit = $page * 5;
         $offset = $limit - 5;
 
-        return response()->json(Post::with('user', 'user_to', 'user.picture', 'likes', 'postComments', 'postComments.user', 'postComments.user.picture', 'picture')
+        return response()->json(Post::with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )
                             ->orderBy('created_at', 'DESC')
                             ->skip($offset)
                             ->limit($limit)->get());
@@ -53,7 +102,23 @@ class PostsController extends Controller
         $user_id = $request->user_id;
         $offset = $limit - 5;
 
-        return response()->json(Post::with('user', 'user.picture', 'user_to', 'likes', 'postComments', 'postComments.user', 'postComments.user.picture', 'picture')
+        return response()->json(Post::with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )
             ->where('user_id', $user_id)
             ->orderBy('created_at', 'DESC')
             ->skip($offset)
@@ -77,19 +142,38 @@ class PostsController extends Controller
             $imageName = "Pictures/" . time() . '.' . $request->file->extension();
             $request->file->storeAs('public/', $imageName);
             Picture::create([
+                'user_id' => Auth::user()->id,
                 'pictureable_id' => $post->id,
                 'pictureable_type' => 'App\Models\Post',
-                'url' => $imageName
+                'url' => $imageName,
             ]);
         }
         if (!$post) {
             echo "Error";
         }
         
-        return response()->json(Post::where('id',$post->id)
-                            ->with('user', 'user.picture', 'likes', 'postComments', 'postComments.user','postComments.user.picture')->get());
+        return response()->json(Post::where('id',$post->id)->with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )->get());
     }
-
+    public function userPictures(Request $request){
+        $user_id = $request->user_id;
+        return response()->json(Picture::where('user_id', $user_id)->get());
+    }
     public function show(Post $post){
 
     }

@@ -57,14 +57,14 @@
                 <div class="mb-4 flex justify-center items-center">
                     <div class="mr-5 flex justify-center items-center">
 
-                        <label for="female" class=""><i class="fas fa-mars text-4xl text-blue-600"></i>
-                            <input type="radio" id="female" name="gender" class="">
+                        <label for="male" class=""><i class="fas fa-mars text-4xl text-blue-600"></i>
+                            <input type="radio" id="male" name="gender" value="male"class="">
                         </label>
                     </div>
                     <div>
 
-                        <label for="male" class=""><i class="fas fa-venus text-4xl text-pink-500"></i>
-                            <input type="radio" id="male" name="gender" class="">
+                        <label for="female" class=""><i class="fas fa-venus text-4xl text-pink-500"></i>
+                            <input type="radio" id="female" name="gender" value="female" class="">
                         </label>
                     </div>
                 </div>

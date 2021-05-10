@@ -46,7 +46,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
+   
     public function routeNotificationForMail($notification)
     {
         // Return email address only...
@@ -63,15 +63,26 @@ class User extends Authenticatable
     {
         return $this->morphOne(Picture::class, 'pictureable');
     }
-
+    public function unreadMessages(){
+        return $this->hasMany(Message::class)->where('read_at', null);
+    }
     // public function isMyFriend(){
     //     return $this->belongsToMany(User::class, 'user_friend', 'user_id', 'friend_id');
     // }
     public function friends(){
-        return $this->belongsToMany(Friend::class)
+        return $this->belongsToMany(User::class, 'friend_user', 'user_id', 'friend_id');
         // ->withPivot('accepted')
         ;
     }
+    public function friendsAccepted(){
+        return $this->friends()->withPivot('accepted_at', !null);
+    }
+    public function friendRequestsSent(){
+        return $this->belongsToMany(User::class, 'friend_user', 'user_id', 'friend_id')
+            ->withPivot('accepted_at', null);
+        ;
+    }
+    
 
     // public function isMyFriend(User $user){
     //     return $this->friends->where('friend_id', $user->id);

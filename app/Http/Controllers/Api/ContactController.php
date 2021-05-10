@@ -14,7 +14,7 @@ use function PHPSTORM_META\map;
 
 class ContactController extends Controller
 {
-    public function get(){
+    public function getFriends(){
         // $contacts = $user->friends->friend_id;
         $contacts = [];
         foreach(Auth::user()->friends as $friend){
@@ -43,10 +43,13 @@ class ContactController extends Controller
         });
 
         return response()->json($users);
-        // foreach($users as $user){
-        //     Message::select()->where('user_to_id', Auth::user()->id)->where('read_at', null)->count()
-        // }
-        // return response()->json(User::all()->where('id', '!=', Auth::user()->id));
+       
     }
+    public function getAllUsers(){
+        return response()->json(
+            User::where('id', '!=', Auth::user()->id)->with('picture')->get()
+        );
+    }
+    
     
 }

@@ -4,7 +4,8 @@
     <Post v-for="post in props.posts" :key="post.id" :props="{
         post: post,
         user: props.user,
-        csrf: props.csrf
+        csrf: props.csrf,
+        auth: props.auth
         }"/>
 </div>
   

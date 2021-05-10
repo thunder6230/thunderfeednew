@@ -3,7 +3,7 @@
 @section('content')
 
      <div id="app">
-        <show-single-post :props='@json($laravelCollection)'></show-single-post>
+        <show-single-post user="{{$userWithAllData}}" post="{{$post}}"></show-single-post>
     </div>
 @endsection
 

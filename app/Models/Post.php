@@ -22,12 +22,12 @@ class Post extends Model
         return $this->likes->contains('user_id', $user->id);
     }
 
-    public function postComments(){
-        return $this->hasMany(PostComment::class);
+    public function comments(){
+        return $this->morphMany(Comment::class, 'commentable');
     }
-    public function picture()
+    public function pictures()
     {
-        return $this->morphOne(Picture::class, 'pictureable');
+        return $this->morphMany(Picture::class, 'pictureable');
     }
     public function likes()
     {

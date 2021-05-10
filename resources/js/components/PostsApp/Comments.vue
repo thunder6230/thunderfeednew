@@ -1,10 +1,14 @@
 <template>
-<div class="py-2">
-    <Comment v-for="(comment, index) in props.comments" :key="comment.id" :props="{
-        comment: comment,
-        user: props.user,
-        csrf: props.csrf
-    }" :class="{'hidden' : allCommentsHidden && index < props.comments.length - 2 }" />
+<div class="py-2 border-t border-blue-200">
+    <ul class="flex flex-col">
+        <Comment v-for="(comment, index) in props.comments" :key="comment.id" :props="{
+            comment: comment,
+            user: props.user,
+            csrf: props.csrf,
+            auth: props.auth,
+        }" :class="{'hidden' : allCommentsHidden && index < props.comments.length - 2 }"
+            @removeComment="removeComment"/>
+    </ul>
     <p 
         v-on:click="showHideComments"
         v-if="props.comments.length > 2 && allCommentsHidden == true" 
@@ -12,8 +16,9 @@
     <AddComment :props="{
         postId: props.postId,
         user: props.user,
-        csrf: props.csrf
-    }" @newComment="addComment" />
+        csrf: props.csrf,
+        isWriteComment: props.isWriteComment
+    }" @newComment="addComment" v-if="props.auth == true"/>
 </div>
 </template>
 
@@ -28,7 +33,6 @@ export default {
         }
     },
     mounted(){
-        // console.log(this.props)
     },
     methods:{
         showHideComments(){
@@ -37,6 +41,9 @@ export default {
         addComment(comment){
             this.props.comments.push(comment)
         },
+        removeComment(id){
+            this.$emit('removeComment', id)
+        }
     },
     components: { Comment, AddComment }
 }

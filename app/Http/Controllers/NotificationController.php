@@ -19,11 +19,12 @@ class NotificationController extends Controller
      * rendering the nptifications view element with the unreadmessages count and the user Object
      */
     public function index(user $user){
-        $unreadMessages = Message::select()->where('user_to_id', Auth::user()->id)->where('read_at', null)->count();
+        $userWithAllData = 0;
+        if (Auth::user()) {
+            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'notifications', 'unreadMessages')->get();
+            $userWithAllData = $userWithAllData[0];
+        }
 
-        return view('notifications.index', [
-            'user' => $user, 
-            'unreadMessages' => $unreadMessages
-        ]);
+        return view('notifications.index', compact('userWithAllData'));
     }
 }

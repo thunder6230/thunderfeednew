@@ -9,8 +9,7 @@
                     :alt="`${props.post.user.username}`" class="rounded-full w-10">
             </a>
             <div class="flex flex-col justify-end">
-                <div class="text-lg leading-3 pb-0.5
-text-lg leading-3 pb-0.5">
+                <div class="text-lg leading-3 pb-0.5 text-lg leading-3 pb-0.5">
                     <a :href="`/profile/${props.post.user.username}`"
                             class="font-medium">{{props.post.user.name}}
                     </a>
@@ -21,17 +20,20 @@ text-lg leading-3 pb-0.5">
                 <vue-moments-ago prefix="" suffix="ago" v-bind:date="props.post.created_at" lang="en" class="text-gray-500 inline-block"></vue-moments-ago>
             </div>
         <div class="absolute right-0 top-0" v-if="isMouseEnter && isMyPost == true">
+            <button type="button"><i class="far fa-edit text-blue-700"></i></button>
             <button type="button" @click="confirmDelete"><i class="far fa-times-circle text-red-500"></i></button>
         </div>
     </div>
     <div class="px-4">
         <p class="px-1">{{props.post.body}}</p>
     </div>
-    <img :src="`/storage/${props.post.picture.url}`" alt="" class="rounded" v-if="props.post.picture">
+    <div v-if="props.post.pictures.length > 0">
+        <img :src="`/storage/${picture.url}`" alt="" class="rounded"  v-for="picture in props.post.pictures" :key="picture.id">
+    </div>
     <div class="px-4">
         <div class="flex justify-around py-2">
             <p>{{ props.post.likes.length }} {{pluralize('Like', props.post.likes.length)}}</p>
-            <p>{{ props.post.post_comments.length}} {{pluralize('Comment', props.post.post_comments.length)}}</p>
+            <p>{{ props.post.comments.length}} {{pluralize('Comment', props.post.comments.length)}}</p>
         </div>
         <div v-if="props.user" class="flex items-center py-2 border-t border-blue-200 ">
                 
@@ -43,14 +45,17 @@ text-lg leading-3 pb-0.5">
             class="flex-1 text-blue-700 font-medium text-lg" @click="unlike">
             <i class="fas fa-thumbs-up transform rotate-180 pb-1 text-lg"></i> Unlike</button>
 
-            <a :href="`#comment_body${props.post.id}`" class="flex-1 text-center text-blue-700 font-medium text-lg"><i class="far fa-comment-dots"></i> Write Comment</a>
+            <p class="flex-1 text-center text-blue-700 font-medium text-lg cursor-pointer" @click="writeComment"><i class="far fa-comment-dots"></i> Write Comment</p>
         </div>
         <Comments :props="{
             postId: props.post.id,
-            comments: props.post.post_comments,
+            comments: props.post.comments,
             user: props.user,
-            csrf: props.csrf
-        }" />
+            csrf: props.csrf,
+            auth: props.auth,
+            isMouseEnter: isMouseEnter,
+            isWriteComment: isWriteComment
+        }" @removeComment="removeComment"/>
     </div>
 
 </div>
@@ -65,9 +70,12 @@ export default {
     data(){
         return {
             isLikedByMe: false,
+            myLikeId: null,
             isCommentsOpen: false,
             isMyPost: false,
-            isMouseEnter: false
+            isMouseEnter: false,
+            isWriteComment: false
+
         }
     },
     methods: {
@@ -95,21 +103,21 @@ export default {
             }
             axios.post('/api/posts/like', params)
             .then(resp => {
-                this.isLikedByMe = true
-                this.props.post.likes.push(resp.data)
+                if(resp.status == 200){
+                    this.isLikedByMe = true
+                    this.myLikeId = resp.data.id
+                    this.props.post.likes.push(resp.data)
+                }
             })
             .catch(err => console.log(err))
         },
         unlike(){
-            const params = {
-                'post_id': this.props.post.id,
-                '_token': this.props.csrf
-            }
-            axios.delete(`/api/posts/${this.props.post.id}/like`, params)
+            axios.delete(`/api/like/${this.myLikeId}/unlike`)
             .then(resp => {
                 if (resp.status == 200){
-                    this.props.post.likes = this.props.post.likes.filter(like => like.user_liked_id == this.props.user.id ? false : true)
+                    this.props.post.likes = this.props.post.likes.filter(like => like.id != this.myLikeId)
                     this.isLikedByMe = false
+                    this.myLikeId = null
                 }
                 return
             })
@@ -120,6 +128,15 @@ export default {
         },
         handleMouseLeave(){
             this.isMouseEnter = false
+        },
+        writeComment(){
+            console.log('fityma')
+            this.isWriteComment = true
+        },
+        removeComment(id){
+            let comments = [...this.props.post.comments]
+            comments = comments.filter(comment => comment.id != id)
+            this.props.post.comments = comments
         }
     },
     mounted(){
@@ -128,12 +145,14 @@ export default {
             this.props.post.likes.forEach(like => {
                 if(like.user_liked_id == this.props.user.id){
                     this.isLikedByMe = true
+                    this.myLikeId = like.id
                     return
                 }
             })
             this.props.post.user_id == this.props.user.id ? this.isMyPost = true : null
         }
     },
+    
     components: {VueMomentsAgo, Comments}
 }
 </script>

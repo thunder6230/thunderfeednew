@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\User;
 use App\Models\Friend;
 use App\Models\Message;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\VarDumper\VarDumper;
 
 class ProfileController extends Controller
 {
@@ -16,10 +13,16 @@ class ProfileController extends Controller
      * Method to render the Profile page content with the unread Messages and the specified user Object
      */
     public function index(User $user){
-        $unreadMessages = Message::select()->where('user_to_id', Auth::user()->id)->where('read_at', null)->count();
-        // $user = User::where('id', $user->id);
-        $users = ['userProfile' => $user, 'userLoggedIn' => Auth::user()];
-        return view('profile.index', compact('unreadMessages', 'users'));
+        $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->get();
+        $userWithAllData = $userWithAllData[0];
+        
+        $profileWithAllData = User::where('id', $user->id)->with('picture')->get();
+        $profileWithAllData = $profileWithAllData[0];
+        if (!Auth::user()) {
+            $userWithAllData = 0;
+        }
+        // $userCollection = ['userProfile' => $profileWithAllData, 'userLoggedIn' => User::where('id', Auth::user()->id)->with('picture')->get()];
+        return view('profile.index', compact('profileWithAllData', 'userWithAllData'));
     }
 
 }

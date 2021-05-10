@@ -26,6 +26,9 @@ Vue.component('post', require('./components/PostsApp/Post.vue').default)
 Vue.component('posts-component', require('./components/PostsApp/PostsComponent.vue').default)
 Vue.component('show-single-post', require('./components/PostsApp/ShowSinglePost.vue').default);
 Vue.component('profile-page', require('./components/ProfileApp/ProfilePage.vue').default);
+Vue.component('modal', require('./components/Modal/Modal.vue').default);
+Vue.component('navbar', require('./components/Navbar/Navbar.vue').default);
+Vue.component('users-page', require('./components/UsersApp/UsersPage.vue').default)
 
 
 
@@ -37,5 +40,8 @@ Vue.component('profile-page', require('./components/ProfileApp/ProfilePage.vue')
 
 const app = new Vue({
     el: '#app',
+});
+const navbar = new Vue({
+    el: '#navbar',
 });
 
