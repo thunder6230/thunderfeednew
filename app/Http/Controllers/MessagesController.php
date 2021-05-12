@@ -20,8 +20,7 @@ class MessagesController extends Controller
      * We render the messages view and pass the unread messages count
      */
     public function index(){
-        $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->get();
-        $userWithAllData = $userWithAllData[0];
+        $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->first();
         return view('messages.index', compact('userWithAllData'));
     }
 }

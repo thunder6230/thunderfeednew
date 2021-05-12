@@ -3,7 +3,6 @@
         @mouseenter="showsScrollbar"
         @mouseleave="hideScrollbar">
         <ul class="divide-y divide-gray-100">
-            <input type="text" @keydown="filterContacts" class="">
             <li
                 v-for="(contact) in sortByNewMessages" :key="contact.id" 
                 class="flex px-4 py-2 w-full  items-center hover:bg-gray-100 cursor-pointer relative"
@@ -11,7 +10,7 @@
                 @click="selectContact(contact)"
                 :class="{ 'bg-gray-100 border-x border-gray-500': contact == selected}"
                 > 
-                    <img v-bind:src="'/storage/' + contact.profile_picture" alt="" class="rounded-full w-8 mr-5 ">
+                    <img v-bind:src="'/storage/' + contact.picture.url" alt="" class="rounded-full w-8 mr-5 ">
                     <p class="">{{ contact.name }}</p>
                 <div v-if="contact.unread > 0" class="w-5 rounded-lg bg-red-500 absolute left-10 top-0">
                     <p class="text-white font-medium text-center text-sm">{{contact.unread}}</p>
@@ -31,11 +30,11 @@
         props:['contacts', 'messages'],
         data(){
             return{
-                selected : 0
+                selected : 0,
+                filter: "",
             }
         },
         mounted() {
-
         },
         methods:{
             selectContact(contact){
@@ -48,9 +47,6 @@
             hideScrollbar(){
                 this.$refs.list.style.overflow = "hidden"
             },
-            filterContacts(){
-
-            }
         },
         computed: {
             sortByNewMessages: function () {
@@ -60,7 +56,7 @@
                     }
                     return contact.unread
                 })]).reverse()
-            }
+            },
         }
     }
 </script>

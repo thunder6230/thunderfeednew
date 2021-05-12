@@ -1875,7 +1875,7 @@ __webpack_require__.r(__webpack_exports__);
     Echo["private"]("messages.".concat(this.user.id)).listen('NewMessage', function (e) {
       _this.handleIncoming(e.message);
     });
-    axios.get('/api/users').then(function (resp) {
+    axios.get('/api/getfriends').then(function (resp) {
       _this.contacts = resp.data;
     });
   },
@@ -1965,12 +1965,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['contacts', 'messages'],
   data: function data() {
     return {
-      selected: 0
+      selected: 0,
+      filter: ""
     };
   },
   mounted: function mounted() {},
@@ -1984,8 +1984,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     hideScrollbar: function hideScrollbar() {
       this.$refs.list.style.overflow = "hidden";
-    },
-    filterContacts: function filterContacts() {}
+    }
   },
   computed: {
     sortByNewMessages: function sortByNewMessages() {
@@ -3944,13 +3943,87 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['props'],
   data: function data() {
-    return {};
+    return {
+      isMyfriend: false,
+      isPending: false,
+      csrf: document.head.querySelector('meta[name="csrf-token"]').content
+    };
   },
-  mounted: function mounted() {},
+  mounted: function mounted() {
+    this.checkFriends();
+  },
+  updated: function updated() {
+    this.checkFriends();
+  },
   methods: {
-    addFriend: function addFriend() {},
-    acceptFriend: function acceptFriend() {},
-    removeFriend: function removeFriend() {}
+    addFriend: function addFriend() {
+      var _this = this;
+
+      var params = {
+        '_token': this.csrf,
+        'user_id': this.props.user.id
+      };
+      axios.post("/api/addfriend", params).then(function (resp) {
+        return _this.$emit('addedFriend', resp.data);
+      })["catch"](function (error) {
+        return console.log(error.response);
+      });
+    },
+    acceptFriend: function acceptFriend() {
+      var _this2 = this;
+
+      var params = {
+        '_token': this.csrf,
+        'user_id': this.props.user.id
+      };
+      axios.post("/api/acceptfriend", params).then(function (resp) {
+        _this2.isPending = false;
+
+        _this2.$emit('acceptedFriend', resp.data);
+      })["catch"](function (error) {
+        return console.log(error.response);
+      });
+    },
+    deleteFriend: function deleteFriend() {
+      var _this3 = this;
+
+      var params = {
+        '_token': this.csrf,
+        '_method': 'DELETE',
+        'user_id': this.props.user.id
+      };
+      axios.post("/api/deletefriend", params).then(function (resp) {
+        _this3.isMyfriend = false;
+
+        _this3.$emit('deleteFriend', resp.data);
+      })["catch"](function (error) {
+        return console.log(error.response);
+      });
+    },
+    checkIfFriend: function checkIfFriend() {
+      var _this4 = this;
+
+      this.props.myFriends.forEach(function (friendId) {
+        if (friendId == _this4.props.user.id) {
+          _this4.isMyfriend = true;
+          return;
+        }
+      });
+    },
+    checkFriendOf: function checkFriendOf() {
+      var _this5 = this;
+
+      this.props.pending.forEach(function (friendId) {
+        if (friendId == _this5.props.user.id) {
+          _this5.isPending = true;
+          return;
+        }
+      });
+    },
+    checkFriends: function checkFriends() {
+      this.checkIfFriend();
+      this.checkFriendOf();
+    }
   }
 });
 
@@ -3977,26 +4050,70 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['user'],
   data: function data() {
     return {
       users: [],
-      userLoggedIn: null
+      userLoggedIn: null,
+      myFriends: [],
+      pending: []
     };
   },
   created: function created() {
     this.userLoggedIn = JSON.parse(this.user);
   },
   mounted: function mounted() {
-    var _this = this;
+    this.getUsers();
+    this.initialize();
+  },
+  methods: {
+    addFriend: function addFriend(id) {
+      this.myFriends.push(id);
+    },
+    acceptedFriend: function acceptedFriend(id) {
+      this.pending = this.pending.filter(function (pendingId) {
+        return pendingId != id;
+      });
+      this.addFriend(id);
+    },
+    deleteFriend: function deleteFriend(id) {
+      this.myFriends = this.myFriends.filter(function (friendId) {
+        return friendId != id;
+      });
+    },
+    createMyFriends: function createMyFriends() {
+      var _this = this;
 
-    axios.get('/api/allusers').then(function (resp) {
-      return _this.users = resp.data;
-    })["catch"](function (error) {
-      return console.log(error.response);
-    });
+      this.userLoggedIn.friends.forEach(function (friend) {
+        return _this.myFriends.push(friend.id);
+      });
+    },
+    getUsers: function getUsers() {
+      var _this2 = this;
+
+      axios.get('/api/allusers').then(function (resp) {
+        return _this2.users = resp.data;
+      })["catch"](function (error) {
+        return console.log(error.response);
+      });
+    },
+    createPending: function createPending() {
+      var _this3 = this;
+
+      this.userLoggedIn.friend_of.forEach(function (friend) {
+        return friend.pivot.accepted_at != null ? _this3.myFriends.push(friend.id) : _this3.pending.push(friend.id);
+      });
+    },
+    initialize: function initialize() {
+      this.createMyFriends();
+      this.createPending();
+    }
   },
   components: {
     User: _User_vue__WEBPACK_IMPORTED_MODULE_0__.default
@@ -69663,62 +69780,54 @@ var render = function() {
       _c(
         "ul",
         { staticClass: "divide-y divide-gray-100" },
-        [
-          _c("input", {
-            attrs: { type: "text" },
-            on: { keydown: _vm.filterContacts }
-          }),
-          _vm._v(" "),
-          _vm._l(_vm.sortByNewMessages, function(contact) {
-            return _c(
-              "li",
-              {
-                key: contact.id,
-                staticClass:
-                  "flex px-4 py-2 w-full  items-center hover:bg-gray-100 cursor-pointer relative",
-                class: {
-                  "bg-gray-100 border-x border-gray-500":
-                    contact == _vm.selected
-                },
-                attrs: { "data-id": contact.id },
-                on: {
-                  click: function($event) {
-                    return _vm.selectContact(contact)
-                  }
-                }
+        _vm._l(_vm.sortByNewMessages, function(contact) {
+          return _c(
+            "li",
+            {
+              key: contact.id,
+              staticClass:
+                "flex px-4 py-2 w-full  items-center hover:bg-gray-100 cursor-pointer relative",
+              class: {
+                "bg-gray-100 border-x border-gray-500": contact == _vm.selected
               },
-              [
-                _c("img", {
-                  staticClass: "rounded-full w-8 mr-5 ",
-                  attrs: { src: "/storage/" + contact.profile_picture, alt: "" }
-                }),
-                _vm._v(" "),
-                _c("p", {}, [_vm._v(_vm._s(contact.name))]),
-                _vm._v(" "),
-                contact.unread > 0
-                  ? _c(
-                      "div",
-                      {
-                        staticClass:
-                          "w-5 rounded-lg bg-red-500 absolute left-10 top-0"
-                      },
-                      [
-                        _c(
-                          "p",
-                          {
-                            staticClass:
-                              "text-white font-medium text-center text-sm"
-                          },
-                          [_vm._v(_vm._s(contact.unread))]
-                        )
-                      ]
-                    )
-                  : _vm._e()
-              ]
-            )
-          })
-        ],
-        2
+              attrs: { "data-id": contact.id },
+              on: {
+                click: function($event) {
+                  return _vm.selectContact(contact)
+                }
+              }
+            },
+            [
+              _c("img", {
+                staticClass: "rounded-full w-8 mr-5 ",
+                attrs: { src: "/storage/" + contact.picture.url, alt: "" }
+              }),
+              _vm._v(" "),
+              _c("p", {}, [_vm._v(_vm._s(contact.name))]),
+              _vm._v(" "),
+              contact.unread > 0
+                ? _c(
+                    "div",
+                    {
+                      staticClass:
+                        "w-5 rounded-lg bg-red-500 absolute left-10 top-0"
+                    },
+                    [
+                      _c(
+                        "p",
+                        {
+                          staticClass:
+                            "text-white font-medium text-center text-sm"
+                        },
+                        [_vm._v(_vm._s(contact.unread))]
+                      )
+                    ]
+                  )
+                : _vm._e()
+            ]
+          )
+        }),
+        0
       )
     ]
   )
@@ -71951,20 +72060,26 @@ var render = function() {
     _vm._v(" "),
     _vm.props.userLoggedIn
       ? _c("div", [
-          _c("button", { on: { click: _vm.addFriend } }, [
-            _c("i", { staticClass: "fas fa-user-plus" }),
-            _vm._v(" Add Friend")
-          ]),
+          !_vm.isMyfriend && !_vm.isPending
+            ? _c("button", { on: { click: _vm.addFriend } }, [
+                _c("i", { staticClass: "fas fa-user-plus" }),
+                _vm._v(" Add Friend")
+              ])
+            : _vm._e(),
           _vm._v(" "),
-          _c("button", { on: { click: _vm.removeFriend } }, [
-            _c("i", { staticClass: "fas fa-user-minus" }),
-            _vm._v(" Remove Friend")
-          ]),
+          _vm.isMyfriend
+            ? _c("button", { on: { click: _vm.deleteFriend } }, [
+                _c("i", { staticClass: "fas fa-user-minus" }),
+                _vm._v(" Remove Friend")
+              ])
+            : _vm._e(),
           _vm._v(" "),
-          _c("button", { on: { click: _vm.acceptFriend } }, [
-            _c("i", { staticClass: "fas fa-user-plus" }),
-            _vm._v(" Accept Friend")
-          ])
+          _vm.isPending
+            ? _c("button", { on: { click: _vm.acceptFriend } }, [
+                _c("i", { staticClass: "fas fa-user-plus" }),
+                _vm._v(" Accept Friend")
+              ])
+            : _vm._e()
         ])
       : _vm._e()
   ])
@@ -72001,8 +72116,15 @@ var render = function() {
         attrs: {
           props: {
             user: user,
-            userLoggedIn: _vm.userLoggedIn
+            userLoggedIn: _vm.userLoggedIn,
+            pending: _vm.pending,
+            myFriends: _vm.myFriends
           }
+        },
+        on: {
+          addedFriend: _vm.addFriend,
+          acceptedFriend: _vm.acceptedFriend,
+          deleteFriend: _vm.deleteFriend
         }
       })
     }),

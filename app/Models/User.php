@@ -66,39 +66,18 @@ class User extends Authenticatable
     public function unreadMessages(){
         return $this->hasMany(Message::class)->where('read_at', null);
     }
-    // public function isMyFriend(){
-    //     return $this->belongsToMany(User::class, 'user_friend', 'user_id', 'friend_id');
-    // }
+
+
+
     public function friends(){
         return $this->belongsToMany(User::class, 'friend_user', 'user_id', 'friend_id');
         // ->withPivot('accepted')
-        ;
-    }
-    public function friendsAccepted(){
-        return $this->friends()->withPivot('accepted_at', !null);
-    }
-    public function friendRequestsSent(){
-        return $this->belongsToMany(User::class, 'friend_user', 'user_id', 'friend_id')
-            ->withPivot('accepted_at', null);
-        ;
-    }
-    
-
-    // public function isMyFriend(User $user){
-    //     return $this->friends->where('friend_id', $user->id);
-    // }
-    
-   
-    // public function isMyAcceptedFriend(User $user){
-    //     return $this->isMyfriend($user)->where('accepted_at', !null);
-    // }
-
-    // public function isMyAcceptedFriendById($id)
-    // {
-    //     $user = User::find($id);
-    //     return $this->friends->where('friend_id', $user->id)->where('accepted_at', !null);
         
-    // }
+    }
+    public function friendOf(){
+        return $this->belongsToMany(User::class, 'friend_user', 'friend_id', 'user_id')->withPivot('accepted_at');
+        
+    }
     
     public function messages(){
         return $this->hasMany(Message::class);

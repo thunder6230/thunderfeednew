@@ -13,15 +13,12 @@ class ProfileController extends Controller
      * Method to render the Profile page content with the unread Messages and the specified user Object
      */
     public function index(User $user){
-        $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->get();
-        $userWithAllData = $userWithAllData[0];
+        $userWithAllData = 0;
         
-        $profileWithAllData = User::where('id', $user->id)->with('picture')->get();
-        $profileWithAllData = $profileWithAllData[0];
-        if (!Auth::user()) {
-            $userWithAllData = 0;
+        $profileWithAllData = User::where('id', $user->id)->with('picture')->first();
+        if (Auth::user()) {
+            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->first();
         }
-        // $userCollection = ['userProfile' => $profileWithAllData, 'userLoggedIn' => User::where('id', Auth::user()->id)->with('picture')->get()];
         return view('profile.index', compact('profileWithAllData', 'userWithAllData'));
     }
 

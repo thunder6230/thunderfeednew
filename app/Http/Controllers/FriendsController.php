@@ -13,8 +13,7 @@ class FriendsController extends Controller
     {
         $userWithAllData = 0;
         if (Auth::user()) {
-            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'notifications', 'unreadMessages')->get();
-            $userWithAllData = $userWithAllData[0];
+            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'notifications', 'unreadMessages')->first();
         }
         return view('users.friends', compact('userWithAllData'));
     }

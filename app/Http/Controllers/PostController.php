@@ -26,8 +26,7 @@ class PostController extends Controller
     public function index(){
         $userWithAllData = 0;
         if(Auth::user()){
-            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications','notifications', 'unreadMessages')->get();
-            $userWithAllData = $userWithAllData[0];
+            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications','notifications', 'unreadMessages')->first();
         }
         return view('posts.index', compact('userWithAllData'));
     }
@@ -37,10 +36,9 @@ class PostController extends Controller
      * This function is for the email and the notification to show only the post has been commented or liked.
     */
     public function show(Post $post){
-        $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications','notifications', 'unreadMessages')->get();
-        $userWithAllData = $userWithAllData[0];
-        $post = Post::where('id', $post->id)->with(['user','user.picture', 'likes', 'postComments', 'postComments.picture', 'postComments.user', 'postComments.user.picture',])->get();
-        $post = $post[0];
+        $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications','notifications', 'unreadMessages')->first();
+        
+        $post = Post::where('id', $post->id)->with(['user','user.picture', 'likes', 'postComments', 'postComments.picture', 'postComments.user', 'postComments.user.picture',])->first();
         return view('posts.show', compact('userWithAllData', 'post'));
     }
 

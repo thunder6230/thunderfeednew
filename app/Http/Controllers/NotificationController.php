@@ -21,8 +21,7 @@ class NotificationController extends Controller
     public function index(user $user){
         $userWithAllData = 0;
         if (Auth::user()) {
-            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'notifications', 'unreadMessages')->get();
-            $userWithAllData = $userWithAllData[0];
+            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'notifications', 'unreadMessages')->first();
         }
 
         return view('notifications.index', compact('userWithAllData'));

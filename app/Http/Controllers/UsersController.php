@@ -12,10 +12,15 @@ class UsersController extends Controller
     public function index(){
         $userWithAllData = 0;
         if (Auth::user()) {
-            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'notifications', 'unreadMessages')->get();
-            $userWithAllData = $userWithAllData[0];
+            $userWithAllData = User::where('id', Auth::user()->id)->with(
+                'picture', 
+                'unreadNotifications',
+                'notifications', 
+                'unreadMessages',
+                'friends',
+                'friendOf'
+            )->first();
         }
-        // dd(Auth::user()->friendsAccepted);
         return view('users.users', compact('userWithAllData'));
     }
 }

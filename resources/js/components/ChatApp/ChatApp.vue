@@ -26,7 +26,7 @@ import ContactList from './ContactList'
                 .listen('NewMessage', (e => {
                     this.handleIncoming(e.message)
                 }))
-            axios.get('/api/users')
+            axios.get('/api/getfriends')
             .then(resp => {
                 this.contacts = resp.data
             })

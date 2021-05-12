@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\MessageController;
 */
 Route::get('/users', [ContactController::class, 'getAll']);
 Route::get('/allusers', [ContactController::class, 'getAllUsers']);
+Route::get('/getfriends', [ContactController::class, 'getFriends']);
 
 
 
@@ -58,6 +59,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/picture/{id}/comment', [CommentController::class, 'storePictureComment']);
     Route::post('/comments/{id}/reply', [CommentController::class, 'storeCommentReply']);
     Route::delete('/posts/comments/{id}', [CommentController::class, 'destroy']);
+
+    Route::post('/addfriend', [ContactController::class, 'store']);
+    Route::post('/acceptfriend', [ContactController::class, 'update']);
+    Route::delete('/deletefriend', [ContactController::class, 'destroy']);
 
 });
 
