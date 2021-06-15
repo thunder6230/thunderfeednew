@@ -57,7 +57,8 @@ class RegisterController extends Controller
         Picture::create([
             'pictureable_id' => $user->id,
             'pictureable_type' => 'App\Models\User',
-            'url' => $this->profilePicture($request->gender)
+            'url' => $this->profilePicture($request->gender),
+            'user_id' => $user->id
         ]);
 
         

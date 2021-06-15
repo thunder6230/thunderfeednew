@@ -75,8 +75,8 @@ export default {
             this.activePage = data
         },
         openModal(props){
-            this.isModalOpen = true
             this.modalProps = props
+            this.isModalOpen = true
         }
     },
     components: { ProfilePosts, ProfileDatas, ProfileImages, Button },

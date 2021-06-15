@@ -29,6 +29,7 @@ Route::get('/getfriends', [ContactController::class, 'getFriends']);
 
 
 Route::get('/getposts', [PostsController::class, 'getposts']);
+Route::get('/getpost/{id}', [PostsController::class, 'show']);
 Route::get('/getuserposts', [PostsController::class, 'getUserPosts']);
 Route::get('/getmoreposts', [PostsController::class, 'loadMorePosts']);
 Route::get('/user_pictures', [PostsController::class, 'userPictures']);
@@ -46,19 +47,21 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/posts', [PostsController::class, 'store']);
     Route::get('/posts/{post}', [PostsController::class, 'show']);
     Route::delete('/posts/{id}', [PostsController::class, 'destroy']);
+    Route::post('/posts/update', [PostsController::class, 'update']);
 
     //endpoint for Post Likes, Comment Likes Picture likes and Reply likes
     Route::post('/posts/like', [LikeController::class, 'storePostLike']);
     Route::post('/comments/like', [LikeController::class, 'storeCommentLike']);
-    Route::post('/pictures/{id}/like', [LikeController::class, 'storeCommentLike']);
+    Route::post('/pictures/like', [LikeController::class, 'storePictureLike']);
     Route::delete('/like/{id}/unlike', [LikeController::class, 'destroy']);
 
     //endpoints for Post Comments, Picture Comments and Comment replies
     Route::post('/posts/{id}/comment', [CommentController::class, 'storePostComment']);
     Route::post('/posts/comments/{id}/like', [LikeController::class, 'storePostComment']);
-    Route::post('/picture/{id}/comment', [CommentController::class, 'storePictureComment']);
+    Route::post('/pictures/{id}/comment', [CommentController::class, 'storePictureComment']);
     Route::post('/comments/{id}/reply', [CommentController::class, 'storeCommentReply']);
-    Route::delete('/posts/comments/{id}', [CommentController::class, 'destroy']);
+    Route::post('/comments/update', [CommentController::class, 'update']);
+    Route::delete('/posts/comments/{id}', [CommentController::class, 'destroy']); 
 
     Route::post('/addfriend', [ContactController::class, 'store']);
     Route::post('/acceptfriend', [ContactController::class, 'update']);

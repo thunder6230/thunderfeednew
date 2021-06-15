@@ -33,7 +33,7 @@ class ContactController extends Controller
     }
     public function getAll(){
         // dd(Message::all()->where('user_to_id', Auth::user()->id));
-        $users = User::all()->where('id', '!=', Auth::user()->id);
+        $users = User::all()->where('id', '!=', Auth::user()->id)->with('picture');
 
         $unreadMessages = Message::select(DB::raw('user_id, count(*) as messages_count'))
             ->where('user_to_id', Auth::user()->id)
@@ -51,8 +51,10 @@ class ContactController extends Controller
        
     }
     public function getAllUsers(){
+        // dd(User::all());
+        $id = Auth::user()->id ?? -1;
         return response()->json(
-            User::where('id', '!=', Auth::user()->id)->with('picture')->get()
+            User::where('id', '!=', $id)->with('picture')->get()
         );
     }
 

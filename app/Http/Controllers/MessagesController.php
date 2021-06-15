@@ -21,6 +21,7 @@ class MessagesController extends Controller
      */
     public function index(){
         $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->first();
-        return view('messages.index', compact('userWithAllData'));
+        $isMessages = true;
+        return view('messages.index', compact('userWithAllData', 'isMessages'));
     }
 }

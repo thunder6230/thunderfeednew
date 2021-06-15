@@ -20,7 +20,7 @@ body::-webkit-scrollbar-thumb {
     background: #1d4fd8;
 }
 
-.notificationDiv {
+/* .notificationDiv {
     position: absolute;
     width: 13em;
     left: -3em;
@@ -43,4 +43,4 @@ body::-webkit-scrollbar-thumb {
     transform: translate(-50%, -50%);
     font-size: 0.7em;
     font-weight: 700;
-}
+} */

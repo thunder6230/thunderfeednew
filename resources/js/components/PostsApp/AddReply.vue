@@ -33,7 +33,7 @@ export default {
     
                 axios.post(`/api/comments/${this.props.comment_id}/reply`, formData)
                 .then(resp => {
-                    this.$emit("newReply", resp.data[0])
+                    this.$emit("newReply", resp.data)
                     this.file = null
                     this.reply = ""
                 })

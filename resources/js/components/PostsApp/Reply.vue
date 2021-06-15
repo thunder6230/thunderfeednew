@@ -11,15 +11,19 @@
                 <vue-moments-ago prefix="" suffix="ago" v-bind:date="props.reply.created_at" lang="en" class="ml-5"></vue-moments-ago>
             </div>
             <div>
-                <p class="text-md leading-3">{{props.reply.body}}</p>
+                <p class="text-md leading-3" v-if="!isEditOn">{{reply_body}}</p>
+                    <form @submit.prevent="submitEdit" v-if="isEditOn">
+                        <input type="text" ref="replyInput" v-model="newBody" class="text-md leading-3 px-1">
+                    </form>
+                    <!-- <img v-if="props.comment.picture != undefined" :src="`/storage/${props.comment.picture.url}`" alt="" class="rounded w-auto mr-2 pt-2"> -->
                 <img v-if="props.reply.picture != undefined" :src="`/storage/${props.comment.picture.url}`" alt="" class="rounded w-auto mr-2 pt-2">
             </div>
         </div>
         <div class="flex absolute -bottom-1.5 left-12 text-xs text-blue-700 font-medium" v-if="props.auth">
             <p class="mr-1 cursor-pointer" @click="like" v-if="!isLikedByMe">Like</p>
             <p class="mr-1 cursor-pointer" @click="unlike" v-else>Unlike</p>
-            <p class="mr-1 cursor-pointer" @click="replyComment">Reply</p>
-            <p v-if="isMyComment" class="mr-1 cursor-pointer">Edit</p>
+            <p class="mr-1 cursor-pointer" @click="replyComment" data-role="newReply">Reply</p>
+            <p v-if="isMyComment" class="mr-1 cursor-pointer" @click="editComment">Edit</p>
             <p v-if="isMyComment" class="cursor-pointer" @click="confirmDelete(props.comment.id)" >Delete</p>
         </div>
   </div>
@@ -35,6 +39,9 @@ export default {
             isMyComment: false,
             isLikedByMe: false,
             myLikeId: null,
+            reply_body: this.props.reply.body,
+            newBody: "",
+            isEditOn: false
         }
     },
     mounted(){
@@ -69,7 +76,7 @@ export default {
         },
         like(){
             const params = {
-                'comment_id': this.props.comment.id,
+                'comment_id': this.props.reply.id,
                 '_token': this.props.csrf
             }
             axios.post('/api/comments/like', params)
@@ -96,6 +103,31 @@ export default {
         },
         replyComment(){
             this.$emit('isWritingActive')
+        },
+        
+        editComment(){
+            this.isEditOn = !this.isEditOn
+            setTimeout(() => {
+                this.$refs.replyInput.focus()
+            }, 50);
+        },
+        submitEdit(){
+            const params = {
+                '_token': this.props.csrf,
+                'new_body': this.newBody,
+                'comment_id': this.props.reply.id
+            }
+            axios.post(`/api/comments/update`, params)
+            .then(resp => {
+                if(resp.data.success){
+                    alert('Something went wrong!')
+                }
+
+                this.reply_body = this.newBody
+                this.isEditOn = false
+                this.newBody = ""
+            })
+            .catch(error => console.log(error.response))
         }
     },
     components: {VueMomentsAgo}

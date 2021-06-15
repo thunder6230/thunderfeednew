@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Post;
+
+use App\Models\Message;
+use App\Models\Picture;
+use App\Models\PostComment;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -64,7 +68,7 @@ class User extends Authenticatable
         return $this->morphOne(Picture::class, 'pictureable');
     }
     public function unreadMessages(){
-        return $this->hasMany(Message::class)->where('read_at', null);
+        return $this->hasMany(Message::class, 'user_to_id')->whereNull('read_at');
     }
 
 

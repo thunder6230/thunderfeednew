@@ -20,7 +20,8 @@ class LoginController extends Controller
      * Return the login view element
      */
     public function index(){
-        return view('auth.login');
+        $userWithAllData = 0;
+        return view('auth.login', compact('userWithAllData'));
     }
     /**
      * Validate the login data and try to login. If not we resend a session message. If successfull we generate a token. it's important for the Post requests middleware.

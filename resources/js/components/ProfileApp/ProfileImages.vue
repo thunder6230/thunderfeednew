@@ -19,11 +19,15 @@ export default {
   },
   methods: {
     openModal(pictureIndex){
-      this.$emit('openModal', {
+      const props =  {
         isModalOpen: true,
         pictures: this.pictures,
-        currentPicture: pictureIndex
-      })
+        currentPicture: pictureIndex,
+        user: this.props.userLoggedIn,
+        csrf: this.props.csrf,
+        auth: this.props.auth,
+      }
+      this.$emit('openModal', props)
     }
   }
 }

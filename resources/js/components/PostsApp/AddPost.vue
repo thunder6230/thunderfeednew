@@ -49,7 +49,7 @@ export default {
              */
             axios.post('/api/posts', formData, config)
             .then(resp => {
-                this.$emit('newPost', resp.data[0])
+                this.$emit('newPost', resp.data)
                 this.$refs.body.value = ""
             })
             .catch(error => {

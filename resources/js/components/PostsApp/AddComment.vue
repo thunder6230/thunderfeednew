@@ -18,16 +18,16 @@ export default {
     props:['props'],
     data(){
         return{
-            file: null
+            file: null,
+            isWritingComment: false
         }
     },
-    watch: {
-        isWriteComment(newVal, oldVal){
-            if(newVal){
-                console.log('fityma')
-                this.$refs.body.focus()
-            }
-        }
+    mounted(){
+       
+    },
+    beforeUpdate(){
+        this.isWritingComment = this.props.isWriteComment
+        this.isWritingComment ? this.$refs.body.focus() : null
     },
     methods:{
         submit(){

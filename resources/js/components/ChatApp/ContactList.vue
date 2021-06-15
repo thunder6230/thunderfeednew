@@ -31,7 +31,6 @@
         data(){
             return{
                 selected : 0,
-                filter: "",
             }
         },
         mounted() {

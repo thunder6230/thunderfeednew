@@ -15,7 +15,7 @@ class UsersController extends Controller
             $userWithAllData = User::where('id', Auth::user()->id)->with(
                 'picture', 
                 'unreadNotifications',
-                'notifications', 
+                'notifications',
                 'unreadMessages',
                 'friends',
                 'friendOf'

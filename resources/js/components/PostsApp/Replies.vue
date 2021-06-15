@@ -31,10 +31,25 @@ export default {
     data(){
         return{
             allCommentsHidden: true,
-            isWritingReply: false
+            isWritingReply: false,
+
         }
     },
     mounted(){
+        this.isWritingReply = this.props.isWritingReply
+    },
+    updated(){
+        // if(this.isWritingReply != this.props.isWritingReply){
+        //     this.isWritingReply = this.props.isWritingReply
+        // }
+        document.addEventListener('click', (e) => {
+
+            // this.isWritingReply =  e.target.getAttribute('data-role') != "newReply" ? false : true
+            
+        })
+    },
+    watch: {
+        
     },
     methods:{
         showHideComments(){

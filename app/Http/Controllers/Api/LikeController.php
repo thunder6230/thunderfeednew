@@ -36,6 +36,7 @@ class LikeController extends Controller
     }
     public function storeCommentLike(Request $request)
     {
+        // dd($request);
         $comment = Comment::find($request->comment_id);
 
         $like = Like::create([
@@ -44,30 +45,31 @@ class LikeController extends Controller
             'likeable_type' => 'App\Models\Comment',
             'type' => "like"
             ]);
-
-            
+        //check if the commentable is already a post model
+        $post = $comment->commentable->commentable_type ? 
+        $comment->commentable->commentable : $comment->commentable;
+        
         if (Auth::user() != $comment->user) {
-            Mail::to($comment->user->email)->send(new CommentLiked($comment->commentable, Auth::user()));
-            $comment->user->notify(new PostLikedNotification($comment->commentable, Auth::user()));
+            Mail::to($comment->user->email)->send(new CommentLiked($post, Auth::user()));
+            $comment->user->notify(new PostLikedNotification($post, Auth::user()));
         }
             
         return response()->json($like);
     }
     public function storePictureLike(Request $request)
     {
-
-        $post = Picture::find($request->post_id);
+        $picture = Picture::find($request->id);
 
         $like = Like::create([
             'user_liked_id' => Auth::user()->id,
-            'likeable_id' => $post->id,
+            'likeable_id' => $picture->id,
             'likeable_type' => 'App\Models\Picture',
             'type' => "like"
         ]);
 
-        if (Auth::user() != $post->user) {
-            Mail::to($post->user->email)->send(new PostLiked($post, Auth::user()));
-            $post->user->notify(new PostLikedNotification($post, Auth::user()));
+        if (Auth::user() != $picture->user) {
+           // Mail::to($picture->user->email)->send(new PostLiked($picture, Auth::user()));
+            //$picture->user->notify(new PostLikedNotification($picture, Auth::user()));
         }
 
         return response()->json($like);

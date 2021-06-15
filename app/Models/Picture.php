@@ -14,11 +14,11 @@ class Picture extends Model
     public function pictureable() {
         return $this->morphTo();
     }
-    public function like(){
-        return $this->morphOne(Like::class, 'likeable');
+    public function likes(){
+        return $this->morphMany(Like::class, 'likeable');
     }
     public function comments(){
-        return $this->morphToMany(Comment::class, 'commentable');
+        return $this->morphMany(Comment::class, 'commentable');
     }
     public function user(){
         return $this->belongsTo(User::class);

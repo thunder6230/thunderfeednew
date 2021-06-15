@@ -17,7 +17,10 @@ class ProfileController extends Controller
         
         $profileWithAllData = User::where('id', $user->id)->with('picture')->first();
         if (Auth::user()) {
-            $userWithAllData = User::where('id', Auth::user()->id)->with('picture', 'unreadNotifications', 'unreadMessages')->first();
+            $userWithAllData = User::where('id', Auth::user()->id)->with(
+                'picture',
+                'unreadNotifications',
+                'unreadMessages')->first();
         }
         return view('profile.index', compact('profileWithAllData', 'userWithAllData'));
     }

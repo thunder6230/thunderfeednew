@@ -42,6 +42,7 @@ class CommentController extends Controller
             'pictures',
             'user',
             'user.picture',
+            'likes',
             'replies',
             'replies.likes',
             'replies.user',
@@ -60,7 +61,7 @@ class CommentController extends Controller
             'user_id' => Auth::user()->id,
             'body' => $request->body,
             'commentable_id' => $id,
-            'commentable_type' => 'App\Models\Post'
+            'commentable_type' => 'App\Models\Picture'
         ]);
         if ($request->file) {
 
@@ -70,7 +71,7 @@ class CommentController extends Controller
             Picture::create([
                 'user_id' => Auth::user()->id,
                 'pictureable_id' => $comment->id,
-                'pictureable_type' => 'App\Models\Comment',
+                'pictureable_type' => 'App\Models\Post',
                 'url' => $imageName
             ]);
         }
@@ -78,6 +79,7 @@ class CommentController extends Controller
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'user',
+            'likes',
             'user.picture',
             'replies',
             'replies.likes',
@@ -112,13 +114,14 @@ class CommentController extends Controller
 
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
+            'likes',
             'user',
             'user.picture',
             'replies',
             'replies.likes',
             'replies.user',
             'replies.user.picture',
-        )->get();
+        )->first();
         return response()->json($comment);
     }
 
@@ -127,4 +130,18 @@ class CommentController extends Controller
             return response($id);
         }
     }
+
+    public function update(Request $request)
+    {
+        $comment_id = $request->comment_id;
+        $new_body = $request->new_body;
+
+
+        $comment = Comment::find($comment_id);
+        if (!$comment->update(['body' => $new_body])) {
+            return response()->json(['succes' => false]);
+        }
+        return response()->json(['succes' => true]);
+    }
+  
 }

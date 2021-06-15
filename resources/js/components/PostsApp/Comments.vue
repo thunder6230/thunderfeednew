@@ -32,8 +32,6 @@ export default {
             allCommentsHidden: true
         }
     },
-    mounted(){
-    },
     methods:{
         showHideComments(){
             this.allCommentsHidden = !this.allCommentsHidden
@@ -43,7 +41,7 @@ export default {
         },
         removeComment(id){
             this.$emit('removeComment', id)
-        }
+        },
     },
     components: { Comment, AddComment }
 }

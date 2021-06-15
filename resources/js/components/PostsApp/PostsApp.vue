@@ -1,6 +1,6 @@
 <template>
      <div class="container lg:w-8/12 m-auto pb-4">
-        <AddPostComponent v-if="auth == true" :csrf="csrf" @newPost="addPost" />
+        <AddPostComponent v-if="auth" :csrf="csrf" @newPost="addPost" />
         <posts-component :props="{
             posts: posts,
             user: user,
@@ -8,7 +8,7 @@
             auth: auth,
             loading: isLoading
         }"></posts-component>
-        <h1 v-if="isLoading == true" class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">Loading...</h1>
+        <h1 v-if="isLoading" class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">Loading...</h1>
         <div v-if="posts.length > 0" class="w-full flex justify-center">
             <button
                 v-if="isMorePosts == true && isLoading == false"

@@ -20,16 +20,28 @@
                 <vue-moments-ago prefix="" suffix="ago" v-bind:date="props.post.created_at" lang="en" class="text-gray-500 inline-block"></vue-moments-ago>
             </div>
         <div class="absolute right-0 top-0" v-if="isMouseEnter && isMyPost == true">
-            <button type="button"><i class="far fa-edit text-blue-700"></i></button>
+            <button type="button" @click="editPost"><i class="far fa-edit text-blue-700"></i></button>
             <button type="button" @click="confirmDelete"><i class="far fa-times-circle text-red-500"></i></button>
         </div>
     </div>
     <div class="px-4">
-        <p class="px-1">{{props.post.body}}</p>
+        <p class="px-1" v-if="!isEditOn" ref="postBody">{{postBody}}</p>
+        <form @submit.prevent="submitEdit" v-if="isEditOn">
+            <input type="text" v-model="newBody" class="w-full border-0 px-1" ref="postInput">
+        </form>
     </div>
     <div v-if="props.post.pictures.length > 0">
-        <img :src="`/storage/${picture.url}`" alt="" class="rounded"  v-for="picture in props.post.pictures" :key="picture.id">
+        <img :src="`/storage/${picture.url}`" alt="" class="rounded"  v-for="(picture,index) in props.post.pictures" :key="index" @click="openPostPictureModal(index)">
     </div>
+    <modal @closeModal="isOpenPostPicture = false" v-if="isOpenPostPicture"
+        :props="{
+            pictures: props.post.pictures,
+            currentPicture: clickedPictureIndex,
+            isModalOpen: isOpenPostPicture,
+            user: props.user,
+            csrf: props.csrf,
+            auth: props.auth,
+        }"></modal>
     <div class="px-4">
         <div class="flex justify-around py-2">
             <p>{{ props.post.likes.length }} {{pluralize('Like', props.post.likes.length)}}</p>
@@ -45,7 +57,7 @@
             class="flex-1 text-blue-700 font-medium text-lg" @click="unlike">
             <i class="fas fa-thumbs-up transform rotate-180 pb-1 text-lg"></i> Unlike</button>
 
-            <p class="flex-1 text-center text-blue-700 font-medium text-lg cursor-pointer" @click="writeComment"><i class="far fa-comment-dots"></i> Write Comment</p>
+            <p class="flex-1 text-center text-blue-700 font-medium text-lg cursor-pointer" @click="writeComment" data-role="newComment"><i class="far fa-comment-dots"></i> Write Comment</p>
         </div>
         <Comments :props="{
             postId: props.post.id,
@@ -54,7 +66,7 @@
             csrf: props.csrf,
             auth: props.auth,
             isMouseEnter: isMouseEnter,
-            isWriteComment: isWriteComment
+            isWriteComment: isWriteComment,
         }" @removeComment="removeComment"/>
     </div>
 
@@ -64,6 +76,7 @@
 <script>
 
 import VueMomentsAgo from 'vue-moments-ago'
+import Modal from '../Modal/Modal.vue'
 import Comments from './Comments.vue'
 export default {
     props:['props'],
@@ -74,9 +87,20 @@ export default {
             isCommentsOpen: false,
             isMyPost: false,
             isMouseEnter: false,
-            isWriteComment: false
-
+            isWriteComment: false,
+            isEditOn:false,
+            postBody: this.props.post.body,
+            newBody: "",
+            isOpenPostPicture: false,
+            clickedPictureIndex: 0
         }
+    },
+    mounted(){
+    },
+    updated(){
+         document.addEventListener('click', (e) => {
+            e.target.getAttribute('data-role') != "newComment" ? this.isWriteComment = false : null
+        })
     },
     methods: {
         pluralize(word, amount){
@@ -137,6 +161,35 @@ export default {
             let comments = [...this.props.post.comments]
             comments = comments.filter(comment => comment.id != id)
             this.props.post.comments = comments
+        },
+        editPost(){
+            this.isEditOn = !this.isEditOn
+            setTimeout(() => {
+                this.$refs.postInput.focus()
+            }, 50);
+        },
+        submitEdit(){
+            const params = {
+                '_token': this.props.csrf,
+                'new_body': this.newBody,
+                'post_id': this.props.post.id
+            }
+            axios.post(`/api/posts/update`, params)
+            .then(resp => {
+                console.log(resp.data)
+                if(resp.data.success){
+                    alert('Something went wrong!')
+                }
+
+                this.postBody = this.newBody
+                this.isEditOn = false
+                this.newBody = ""
+            })
+            .catch(error => console.log(error.response))
+        },
+        openPostPictureModal(index){
+           this.clickedPictureIndex = index
+           this.isOpenPostPicture = true
         }
     },
     mounted(){

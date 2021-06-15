@@ -5,25 +5,25 @@
             <li><a href="/posts" class="mr-3">Posts</a></li>
             <li><a href="/contact" class="mr-3">Contact</a></li>
             <li><a href="/about" class="mr-3">About</a></li>
-            <li v-if="auth == true"><a href="/friends" class="mr-3">Friends</a></li>
-            <li v-if="auth == true"><a href="/users" class="mr-3">Users</a></li>
-            <li v-if="auth == true">
+            <li><a href="/users" class="mr-3">Users</a></li>
+            <li v-if="auth"><a href="/friends" class="mr-3">Friends</a></li>
+            <li v-if="auth">
                 <div class="relative mr-3">
                     <a :href="`/${user.username}/messages`">Messages</a>
-                        <div class="notificationLabel" v-if="unreadMessages > 0">
-                            <p class="labelContent">{{unreadMessages}}</p>
+                        <div class="absolute -right-2 -top-2 bg-red-500 px-1 py-0.5 rounded-md leading-3 flex items-center justify-center" v-if="unreadMessages > 0">
+                            <small>{{unreadMessages}}</small>
                         </div>
                 </div>
             </li>
             <li>
-            <div class="relative" v-if="auth == true && user.unread_notifications.length > 0">
-                <button id="notificationBtn"  @click="clickHandle">Notifications</button>
+            <div class="relative w-max" v-if="auth && user.unread_notifications.length > 0">
+                <button @click="clickHandle">Notifications</button>
                 <Notifications :props="{
                     user:user,
                     unread_notifications: user.unread_notifications,
                     isDropdownOpen: isDropdownOpen}"/>
-                <div class="notificationLabel">
-                    <p class="labelContent">{{user.unread_notifications.length}}</p>
+                <div class="absolute -right-2 -top-2 bg-red-500 px-1 py-0.5 rounded-md leading-3 flex items-center justify-center">
+                    <small>{{user.unread_notifications.length}}</small>
                 </div>
             </div>
             <a :href="`/${user.username}/notifications`" v-if="auth==true && user.unread_notifications.length == 0">Notifications</a>
@@ -49,34 +49,30 @@
 <script>
 import Notifications from './Notifications.vue'
 export default {
-    props:['user'],
+    props:['user', 'ismessages'],
     data(){
         return{
             auth: false,
-            unreadMessages: 0,
             isDropdownOpen: false,
-
+            unreadMessages: 0,
         }
     },
     beforeMount(){
-
         this.auth = this.user != 0 ? true : false
+
     },
     mounted(){
-    
-        if(this.auth){
+        if(this.auth && !this.ismessages){
             this.unreadMessages = this.user.unread_messages.length
-
             Echo.private(`messages.${this.user.id}`)
                     .listen('NewMessage', (e => {
                         this.handleIncoming(e.message)
                     }))
-                axios.get('/api/users')
-                .then(resp => {
-                    this.contacts = resp.data
-                })
+                // axios.get('/api/users')
+                // .then(resp => {
+                //     this.contacts = resp.data
+                // })
         }
-
     },
     methods:{
         handleIncoming(){
@@ -85,7 +81,7 @@ export default {
         clickHandle(){
             this.isDropdownOpen = !this.isDropdownOpen
             console.log(this.isDropdownOpen)
-        }
+        },
     },
     components: { Notifications }
 

@@ -27,6 +27,17 @@ class PostsController extends Controller
             'user_to.picture',
             'likes',
             'pictures',
+            'pictures.user',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
+            'pictures.likes',
             'comments',
             'comments.user',
             'comments.user.picture',
@@ -41,6 +52,36 @@ class PostsController extends Controller
             ->limit($limit)->get());
     }
 
+    public function show($id){
+        return response()->json(Post::findOrFail($id)->with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'pictures.user',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
+            'pictures.likes',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )->first());
+    }
     public function getUserPosts(Request $request){
         $page = $request->page;
         $user_id = $request->user_id;
@@ -53,6 +94,17 @@ class PostsController extends Controller
             'user_to.picture',
             'likes',
             'pictures',
+            'pictures.user',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
+            'pictures.likes',
             'comments',
             'comments.user',
             'comments.user.picture',
@@ -63,10 +115,10 @@ class PostsController extends Controller
             'comments.replies.user',
             'comments.replies.user.picture'
         )
-                            ->where('user_id', $user_id)
-                            ->orWhere('user_to_id', $user_id)
-                            ->orderBy('created_at', 'DESC')
-                            ->limit($limit)->get());
+            ->where('user_id', $user_id)
+            ->orWhere('user_to_id', $user_id)
+            ->orderBy('created_at', 'DESC')
+            ->limit($limit)->get());
     }
    
     public function loadMorePosts(Request $request){
@@ -81,6 +133,17 @@ class PostsController extends Controller
             'user_to.picture',
             'likes',
             'pictures',
+            'pictures.user',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
+            'pictures.likes',
             'comments',
             'comments.user',
             'comments.user.picture',
@@ -91,9 +154,9 @@ class PostsController extends Controller
             'comments.replies.user',
             'comments.replies.user.picture'
         )
-                            ->orderBy('created_at', 'DESC')
-                            ->skip($offset)
-                            ->limit($limit)->get());
+            ->orderBy('created_at', 'DESC')
+            ->skip($offset)
+            ->limit($limit)->get());
 
     }
     public function loadMoreUserPosts(Request $request){
@@ -109,6 +172,19 @@ class PostsController extends Controller
             'user_to.picture',
             'likes',
             'pictures',
+            'pictures.user',
+            'pictures.likes',
+            'pictures.comments',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
+            'pictures.likes',
             'comments',
             'comments.user',
             'comments.user.picture',
@@ -151,7 +227,6 @@ class PostsController extends Controller
         if (!$post) {
             echo "Error";
         }
-        
         return response()->json(Post::where('id',$post->id)->with(
             'user',
             'user.picture',
@@ -159,6 +234,19 @@ class PostsController extends Controller
             'user_to.picture',
             'likes',
             'pictures',
+            'pictures.user',
+            'pictures.likes',
+            'pictures.user',
+            'pictures.comments',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
             'comments',
             'comments.user',
             'comments.user.picture',
@@ -168,21 +256,46 @@ class PostsController extends Controller
             'comments.replies.likes',
             'comments.replies.user',
             'comments.replies.user.picture'
-        )->get());
+        )->first());
     }
     public function userPictures(Request $request){
         $user_id = $request->user_id;
-        return response()->json(Picture::where('user_id', $user_id)->get());
-    }
-    public function show(Post $post){
-
+        return response()->json(Picture::where('user_id', $user_id)->with(
+            'user',
+            'likes',
+            'user',
+            'comments',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture',
+        )->get());
     }
 
     public function destroy($id){
-        if(!Post::findOrFail($id)->delete()){
-            echo "Error";
+        $post = Post::find($id);
+        if(!$post){
+            return "Error";
         }
-        return response()->json(['post_id' => $id]);
+        $post->pictures()->delete();
+        $post->delete();
         
+        return response()->json(['post_id' => $id]);
+    }
+
+    public function update(Request $request){
+        $post_id = $request->post_id;
+        $new_body = $request->new_body;
+        $post = Post::find($post_id);
+        if(!$post->update(['body' => $new_body])){
+            return response()->json(['succes' => false]);
+        }
+
+        return response()->json(['succes' => true]);
     }
 }
