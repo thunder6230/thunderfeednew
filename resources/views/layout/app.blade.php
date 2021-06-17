@@ -15,13 +15,20 @@
 </head>
 
 <body class="min-h-screen bg-gray-50 w-full h-full box-border">
+    {{-- <div id="thunderfeed">
+        
+    </div> --}}
     <div id="navbar" class="bg-blue-700 p-4 text-white items-center fixed w-full top-0 z-40 h-14">
         <navbar :user="{{$userWithAllData}}" isMessages="{{ isset($isMessages) }}"></navbar>
     </div>
-
+    {{-- <div id="registerLoginModal">
+        <register-login-modal></register-login-modal>
+    </div> --}}
     <div class="container xs:w-11/12 sm:w-10/12 md:w-9/12 lg:w-8/12 xl:w-8/12 2xl:w-8/12 mt-16 mx-auto min-h-3/4 h-5/6">
         @yield('content')
     </div>
+
+    
 </body>
 <script>
 </script>

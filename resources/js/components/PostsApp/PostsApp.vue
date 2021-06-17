@@ -24,10 +24,12 @@
                 v-if="isMorePosts == false && isLoading == false"
                 class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">There are no Posts yet</h1>
         </div>
+        <RegisterLoginModal />
      </div>
 </template>
 <script>
 import AddPostComponent from './AddPost'
+import RegisterLoginModal from '../RegisterLoginModal/RegisterLoginModal.vue'
 export default {
     props: ['user'],
     data() {
@@ -90,6 +92,6 @@ export default {
         },
         
     },
-    components: { AddPostComponent }
+    components: { AddPostComponent, RegisterLoginModal }
 }
 </script>

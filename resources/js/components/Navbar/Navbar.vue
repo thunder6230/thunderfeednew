@@ -40,9 +40,14 @@
                 </a>
             </li>
             <li v-if="auth == true"><a href="/logout" class="mr-3">Logout</a></li>
-            <li v-if="auth == false"><a href="/login" class="mr-3">Login</a></li>
-            <li v-if="auth == false"><a href="/register" class="mr-3">Register</a></li>
+            <li v-if="auth == false"><a href="#" class="mr-3" @click="isModalActive = true, isLoginActive = true">Login</a></li>
+            <li v-if="auth == false"><a href="#" class="mr-3" @click="isModalActive = true, isRegisterActive = true">Register</a></li>
         </ul>
+        <register-login-modal v-if="isModalActive" :props="{
+            isRegisterActive: isRegisterActive, 
+            isLoginActive:isLoginActive,
+            isModalActive:isModalActive
+            }" @closeModal="closeModal"></register-login-modal>
     </nav>
 </template>
 
@@ -55,6 +60,9 @@ export default {
             auth: false,
             isDropdownOpen: false,
             unreadMessages: 0,
+            isModalActive: false,
+            isRegisterActive: false,
+            isLoginActive: false
         }
     },
     beforeMount(){
@@ -82,6 +90,9 @@ export default {
             this.isDropdownOpen = !this.isDropdownOpen
             console.log(this.isDropdownOpen)
         },
+        closeModal(event){
+            this.isModalActive = event.isModalActive
+        }
     },
     components: { Notifications }
 

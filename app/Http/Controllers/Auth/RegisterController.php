@@ -39,12 +39,12 @@ class RegisterController extends Controller
      */
     public function store(Request $request){
         $this->validate($request, [
-            'name' => 'required|max:255|regex:/^[a-zA-Z ]+$/',
-            'username' => 'required|max:255',
+            'name' => 'required|min:4|max:120|regex:/^[a-zA-Z ]+$/',
+            'username' => 'required|min:5|max:120',
             'email' => 'required|max:255|email',
             'gender' => 'required',
             // 'password'=> 'required|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-            'password' => 'required|min:8',
+            'password' => 'required|confirmed|min:8',
         ]);
         $user = User::create([
             'name' => $request->name,
@@ -64,8 +64,8 @@ class RegisterController extends Controller
         
         Auth::attempt($request->only(['email', 'password']));
         Auth::user()->createToken('user-access');
-        
-        return redirect('posts');
+        // return response()->json(Auth::user());
+        return response()->json(['success' => true, 'path' => '/posts']);
     }
    
 }

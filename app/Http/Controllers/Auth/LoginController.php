@@ -35,9 +35,11 @@ class LoginController extends Controller
         $request->password = Hash::make($request->password);
         
         if(!Auth::attempt($request->only(['email', 'password']), $request->remember)){
-            return back()->with('status', 'Invalid Email or Password');
+            return response()->json(['success' => false, 'message' => 'Invalid Email or Password']);
+            // return back()->with('status', 'Invalid Email or Password');
+
         }
         Auth::user()->createToken('user-access');
-        return redirect('posts');
+        return response()->json(['success' => true, 'path' => '/posts']);
     }
 }
