@@ -13,6 +13,7 @@ class FriendAccepted extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
+    public $gender;
     /**
      * Create a new notification instance.
      *
@@ -21,6 +22,7 @@ class FriendAccepted extends Mailable
     public function __construct(User $user)
     {
         $this->user = $user;
+        $this->gender = $this->user->gender == 'male' ? 'his' : 'her';
     }
 
     /**
@@ -30,8 +32,12 @@ class FriendAccepted extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.requests.friend_accepted', [
-            'user' => $this->user
+        return $this->markdown('emails.email', [
+            'title' => 'You have a new friend!',
+            'message' => "{$this->user->name} accepted your friend request. Click on the button to check {$this->gender} profile!",
+            'buttonText' => 'Check Profile',
+            'route' => 'profile',
+            'route_params' => $this->user->username
         ]);
     }
 }

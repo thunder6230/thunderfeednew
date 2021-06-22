@@ -30,6 +30,7 @@ Vue.component('modal', require('./components/Modal/Modal.vue').default)
 Vue.component('navbar', require('./components/Navbar/Navbar.vue').default)
 Vue.component('users-page', require('./components/UsersApp/UsersPage.vue').default)
 Vue.component('register-login-modal', require('./components/RegisterLoginModal/RegisterLoginModal.vue').default)
+Vue.component('about-us-page', require('./components/AboutUsPage/AboutUs.vue').default)
 
 
 

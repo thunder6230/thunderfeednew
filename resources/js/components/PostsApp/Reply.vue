@@ -1,5 +1,5 @@
 <template>
-  <div :class="`flex items-start relative pb-2 ${props.auth ? 'mb-2' : ''}`" ref="reply">
+  <div class="flex items-start relative pb-2 mb-2" ref="reply">
         <div class="mr-2 flex-none">
             <a :href="`/profile/${props.reply.username}`">
                 <img :src="`/storage/${props.reply.user.picture.url}`" alt="" class="rounded-full w-8">
@@ -19,7 +19,7 @@
                 <img v-if="props.reply.picture != undefined" :src="`/storage/${props.comment.picture.url}`" alt="" class="rounded w-auto mr-2 pt-2">
             </div>
         </div>
-        <div class="flex absolute -bottom-1.5 left-12 text-xs text-blue-700 font-medium" v-if="props.auth">
+        <div class="flex absolute -bottom-1.5 left-12 text-xs text-blue-700 font-medium" >
             <p class="mr-1 cursor-pointer" @click="like" v-if="!isLikedByMe">Like</p>
             <p class="mr-1 cursor-pointer" @click="unlike" v-else>Unlike</p>
             <p class="mr-1 cursor-pointer" @click="replyComment" data-role="newReply">Reply</p>
@@ -75,6 +75,9 @@ export default {
             .catch(error => console.log(error.response))
         },
         like(){
+            if(!this.props.auth){
+                return this.$emit('openLogin')
+            }
             const params = {
                 'comment_id': this.props.reply.id,
                 '_token': this.props.csrf
@@ -102,7 +105,10 @@ export default {
             .catch(err => console.log(err))
         },
         replyComment(){
-            this.$emit('isWritingActive')
+            if(!this.props.auth){
+                return this.$emit('openLogin')
+            }
+            this.$emit('isWritingReply', this.props.reply.id)
         },
         
         editComment(){

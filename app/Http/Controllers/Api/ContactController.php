@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
-use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Friend;
 use App\Models\Message;
 use Illuminate\Http\Request;
-use function PHPSTORM_META\map;
-use Illuminate\Support\Facades\DB;
+use App\Mail\FriendRequested;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Mail\FriendAccepted;
+use App\Notifications\FriendRequestAcceptedNotification;
+use App\Notifications\FriendRequestNotification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -59,20 +62,23 @@ class ContactController extends Controller
     }
 
     public function store(Request $request){
-        $friend_id = $request->user_id;
-        Auth::user()->friends()->attach($friend_id);
-        return response($friend_id);    
+
+        $friend = User::find($request->user_id);
+        Auth::user()->friends()->attach($friend->id);
+        Mail::to($friend->email)->send(new FriendRequested(Auth::user()));
+        $friend->notify(new FriendRequestNotification(User::with('picture')->find(Auth::user()->id)));
+        return response($friend->id);    
     }
 
     public function update(Request $request){
-
-        $friend_id = $request->user_id;
-        $friendship = Auth::user()->friendOf()->where('user_id', $friend_id)->first();
-        
+        $friend = User::find($request->user_id);
+        $friendship = Auth::user()->friendOf()->where('user_id', $friend->id)->first();
         if(!$friendship->pivot->update(['accepted_at' => now()])){
             return response("Error", 500);
         }
-        return response($friend_id);  
+        Mail::to($friend->email)->send(new FriendAccepted(Auth::user()));
+        $friend->notify(new FriendRequestAcceptedNotification(User::with('picture')->find(Auth::user()->id)));
+        return response($friend->id);  
     }
     
     public function destroy(Request $request){
@@ -91,5 +97,6 @@ class ContactController extends Controller
         return response("There is no Friendship data", 500);
         
     }
+    
     
 }

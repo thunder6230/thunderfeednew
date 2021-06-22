@@ -28,10 +28,12 @@ Route::get('/getfriends', [ContactController::class, 'getFriends']);
 
 
 
+
 Route::get('/getposts', [PostsController::class, 'getposts']);
 Route::get('/getpost/{id}', [PostsController::class, 'show']);
 Route::get('/getuserposts', [PostsController::class, 'getUserPosts']);
 Route::get('/getmoreposts', [PostsController::class, 'loadMorePosts']);
+Route::get('/getmoreuserposts', [PostsController::class, 'loadMoreUserPosts']);
 Route::get('/user_pictures', [PostsController::class, 'userPictures']);
 
 //Private Endpoint only for authenticated users

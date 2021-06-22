@@ -2,12 +2,12 @@
 <div>
     <div class="bg-blue-100 rounded-t-lg">
         <div class="flex  items-end p-4 relative mt-4">
-            <img :src="'/storage/' + userProfile.picture.url" alt="" class="w-40 rounded-full border-4 border-white mr-5">
+            <img :src="'/storage/' + profile.picture.url" alt="" class="w-40 rounded-full border-4 border-white mr-5">
             <div>
-                <h1 class="text-3xl font-bold">{{userProfile.name}}</h1>
-                <h2 class="text-xl font-normal">@{{userProfile.username}}</h2>
+                <h1 class="text-3xl font-bold">{{profile.name}}</h1>
+                <h2 class="text-xl font-normal">@{{profile.username}}</h2>
             </div>
-            <div class="absolute right-0 text-sm pr-2" v-if="userLoggedIn.id != userProfile.id">
+            <div class="absolute right-0 text-sm pr-2" v-if="user.id != profile.id">
                 <p><i class="fas fa-user-plus"></i> Add Friend</p>
                 <p><i class="fas fa-user-minus"></i> Remove Friend</p>
                 <p><i class="fas fa-user-plus"></i> Accept Friend</p>
@@ -21,10 +21,10 @@
         </div> 
     </div>
     <div class="container 2xl:w-10/12 m-auto mt-4">
-    <ProfilePosts v-if="activePage == pages[0]" :props="{
+    <profilePosts v-if="activePage == pages[0]" :props="{
         csrf: csrf,
-        userProfile: userProfile,
-        userLoggedIn: userLoggedIn,
+        profile: profile,
+        user: user,
         auth: auth
     }" />
     <ProfileDatas v-if="activePage == pages[1]" />
@@ -32,8 +32,9 @@
     <ProfileImages v-if="activePage == pages[2]" :props="{
         auth: auth,
         csrf: csrf,
-        userProfile: userProfile,
-        userLoggedIn: userLoggedIn
+        profile: profile,
+        user: user,
+        pictureId: picture
     }" @openModal="openModal"/>
     <modal @closeModal="isModalOpen = false" v-if="isModalOpen" :props="modalProps"></modal>
 </div>
@@ -47,27 +48,24 @@ import ProfileImages from '../ProfileApp/ProfileImages.vue'
 import Button from '../ProfileApp/Button.vue'
 
 export default {
-    props: ['profile', 'user'],
+    props: ['profile', 'user', 'picture'],
     data(){
         return{
             csrf: document.head.querySelector('meta[name="csrf-token"]').content,
             auth: false,
-            userProfile: {},
-            userLoggedIn: {},
             pages: ['posts', 'datas', 'pictures'],
             activePage: "",
             isModalOpen: false,
             modalProps: {}
-            
         }
     },
     created(){
-        this.userProfile = JSON.parse(this.profile)
-        this.userLoggedIn = JSON.parse(this.user)
-        this.auth = this.userLoggedIn != 0 ? true : false
+        
+        this.auth = this.user != 0 ? true : false
     },
     mounted(){
-        this.setActivePage(this.pages[0])
+        const pageCount = this.picture > 0 ? 2 : 0
+        this.setActivePage(this.pages[pageCount])
     },
     methods: {
         setActivePage(data){

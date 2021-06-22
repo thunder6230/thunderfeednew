@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed top-0 left-0 w-screen h-screen bg-opacity-50 flex justify-center items-center" data-modal="true" :class="{'z-50' : props.isModalOpen}" @click="closeModal">
+  <div class="fixed top-0 left-0 w-screen h-screen bg-opacity-50 flex justify-center items-center" data-modal="true" :class="{'z-40' : props.isModalOpen}" @click="closeModal">
     <div class="h-screen flex justify-center items-center w-screen" >
         <div class="h-full flex justify-between items-center w-8/12 relative bg-black" :class="{'w-full': isFullScreenOn }">
             <div class="text-gray-400 text-xl hover:text-white hover:text-2xl transition-all cursor-pointer" @click="prevPicture"><i class="fas fa-chevron-left py-16 px-4"></i></div>

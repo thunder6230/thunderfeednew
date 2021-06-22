@@ -13,13 +13,13 @@
         csrf: props.csrf,
         auth: props.auth,
     }" :class="{'hidden' : allCommentsHidden && index < props.replies.length - 2 }"
-        @removeComment="removeComment" @isWritingActive="isWritingActive" />
+        @removeComment="removeComment" @isWritingReply="$emit('isWritingReply')" @openLogin="$emit('openLogin')"/>
     <AddReply :props="{
         comment_id: props.comment_id,
         user: props.user,
         csrf: props.csrf,
         isWritingReply: isWritingReply
-    }" @newReply="addReply" v-if="isWritingReply" />
+    }" @newReply="addReply" v-if="props.isWritingReply" ref="input"/>
 </div>
 </template>
 
@@ -31,8 +31,7 @@ export default {
     data(){
         return{
             allCommentsHidden: true,
-            isWritingReply: false,
-
+            isReplyOpen: 0,
         }
     },
     mounted(){
@@ -43,8 +42,14 @@ export default {
         //     this.isWritingReply = this.props.isWritingReply
         // }
         document.addEventListener('click', (e) => {
+            const dataRole = e.target.getAttribute('data-role')
+            if(dataRole == "newReply"){
+                if (this.props.isWritingReply){
+                    return this.isWritingReply = true
+                }
+            }
+            this.$emit('closeReply')
 
-            // this.isWritingReply =  e.target.getAttribute('data-role') != "newReply" ? false : true
             
         })
     },
@@ -62,10 +67,6 @@ export default {
         removeComment(id){
             this.$emit('removeComment', id)
         },
-        isWritingActive(){
-            this.isWritingReply = true
-
-        }
     },
     components: { Reply, AddReply }
 }

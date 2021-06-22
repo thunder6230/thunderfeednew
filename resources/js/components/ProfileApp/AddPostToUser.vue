@@ -40,7 +40,7 @@ export default {
             if (this.file){
                 formData.append('file', this.file)
             }
-            formData.append('user_to_id', this.props.userProfile.id)
+            formData.append('user_to_id', this.props.profile.id)
             formData.append('_token', this.props.csrf)
             formData.append('body', this.$refs.body.value)
 
@@ -50,7 +50,7 @@ export default {
              */
             axios.post('/api/posts', formData, config)
             .then(resp => {
-                this.$emit('newPost', resp.data[0])
+                this.$emit('newPost', resp.data)
                 this.$refs.body.value = ""
             })
             .catch(error => {

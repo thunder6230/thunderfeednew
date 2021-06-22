@@ -9,7 +9,7 @@
             <li v-if="auth"><a href="/friends" class="mr-3">Friends</a></li>
             <li v-if="auth">
                 <div class="relative mr-3">
-                    <a :href="`/${user.username}/messages`">Messages</a>
+                    <a href="/messages">Messages</a>
                         <div class="absolute -right-2 -top-2 bg-red-500 px-1 py-0.5 rounded-md leading-3 flex items-center justify-center" v-if="unreadMessages > 0">
                             <small>{{unreadMessages}}</small>
                         </div>
@@ -17,16 +17,16 @@
             </li>
             <li>
             <div class="relative w-max" v-if="auth && user.unread_notifications.length > 0">
-                <button @click="clickHandle">Notifications</button>
+                <button @click="clickHandle" data-role="notifications">Notifications</button>
                 <Notifications :props="{
                     user:user,
                     unread_notifications: user.unread_notifications,
-                    isDropdownOpen: isDropdownOpen}"/>
+                    isDropdownOpen: isDropdownOpen}" data-role="notifications"/>
                 <div class="absolute -right-2 -top-2 bg-red-500 px-1 py-0.5 rounded-md leading-3 flex items-center justify-center">
                     <small>{{user.unread_notifications.length}}</small>
                 </div>
             </div>
-            <a :href="`/${user.username}/notifications`" v-if="auth==true && user.unread_notifications.length == 0">Notifications</a>
+            <a href="/notifications" v-if="auth==true && user.unread_notifications.length == 0">Notifications</a>
             </li>
         </ul>
 
@@ -40,14 +40,15 @@
                 </a>
             </li>
             <li v-if="auth == true"><a href="/logout" class="mr-3">Logout</a></li>
-            <li v-if="auth == false"><a href="#" class="mr-3" @click="isModalActive = true, isLoginActive = true">Login</a></li>
-            <li v-if="auth == false"><a href="#" class="mr-3" @click="isModalActive = true, isRegisterActive = true">Register</a></li>
+            <li v-if="auth == false"><a href="#" class="mr-3" @click="openModal('login')">Login</a></li>
+            <li v-if="auth == false"><a href="#" class="mr-3" @click="openModal('register')">Register</a></li>
         </ul>
         <register-login-modal v-if="isModalActive" :props="{
             isRegisterActive: isRegisterActive, 
             isLoginActive:isLoginActive,
-            isModalActive:isModalActive
-            }" @closeModal="closeModal"></register-login-modal>
+            isModalActive:isModalActive,
+            isPasswordActive: isPasswordActive
+            }" @closeModal="resetModal" @changeModal="changeModal"></register-login-modal>
     </nav>
 </template>
 
@@ -62,7 +63,8 @@ export default {
             unreadMessages: 0,
             isModalActive: false,
             isRegisterActive: false,
-            isLoginActive: false
+            isLoginActive: false,
+            isPasswordActive: false
         }
     },
     beforeMount(){
@@ -76,10 +78,16 @@ export default {
                     .listen('NewMessage', (e => {
                         this.handleIncoming(e.message)
                     }))
-                // axios.get('/api/users')
-                // .then(resp => {
-                //     this.contacts = resp.data
-                // })
+        }
+    },
+    updated(){
+
+        if(this.isDropdownOpen){
+            document.addEventListener('click', (e) => {
+                if(e.target.getAttribute('data-role') != 'notifications'){
+                    this.isDropdownOpen = false
+                }
+            })
         }
     },
     methods:{
@@ -88,11 +96,31 @@ export default {
         },
         clickHandle(){
             this.isDropdownOpen = !this.isDropdownOpen
-            console.log(this.isDropdownOpen)
         },
-        closeModal(event){
-            this.isModalActive = event.isModalActive
+        openModal(type){
+            this.resetModal()
+            this.isModalActive = true
+            if(type == 'register'){
+                return this.isRegisterActive = true
+            } 
+            if(type == 'login'){
+                return this.isLoginActive = true
+            }
+            if(type == 'password'){
+                return this.isPasswordActive = true
+            }
+        },
+        resetModal(){
+        this.isRegisterActive = false
+        this.isLoginActive = false
+        this.isPasswordActive = false
+        this.isModalActive = false
+        },
+        changeModal(event){
+            this.resetModal()
+            setTimeout(() => this.openModal(event), 50)
         }
+
     },
     components: { Notifications }
 

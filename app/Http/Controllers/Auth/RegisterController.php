@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
+use BeyondCode\EmailConfirmation\Traits\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -45,7 +47,13 @@ class RegisterController extends Controller
             'gender' => 'required',
             // 'password'=> 'required|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
             'password' => 'required|confirmed|min:8',
+            'path' => 'required|string'
         ]);
+        
+        if(User::where('email', $request->email)->first()){
+                return response()->json(['success' => false, 'message' => 'This email is already in use!']);
+
+        };
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
@@ -61,11 +69,13 @@ class RegisterController extends Controller
             'user_id' => $user->id
         ]);
 
-        
+        // event(new Registered($user));
         Auth::attempt($request->only(['email', 'password']));
         Auth::user()->createToken('user-access');
+    
+        
         // return response()->json(Auth::user());
-        return response()->json(['success' => true, 'path' => '/posts']);
+        return response()->json(['success' => true, 'path' => $request->path]);
     }
    
 }

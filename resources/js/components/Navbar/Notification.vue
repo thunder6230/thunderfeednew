@@ -1,38 +1,20 @@
 <template>
   <!-- <li class="text-black"><a :href="`/posts/${postData.id}`">Notification</a></li> -->
-  <div class="text-black border-b border-blue-200 w-full hover:bg-blue-100" @click="openPost(props.id)">
+  <div class="text-black border-b border-blue-200 w-full hover:bg-blue-100 cursor-pointer" @click="openNotificationEvent(props.unreadNotification.data)">
     <div class="flex">
         <div class="p-1 flex items-center justify-center w-full">
-            <div class="mr-2 w-2/5">
-                <!-- <img :src="`/storage/${props.data.user.picture.url}`"
-                    class="w-8 mt-1 rounded-full" alt=""> -->
-                    <img src="/storage/profile_pictures/male_default.jpg" class="w-12 rounded-full"/>
+            <div class="mr-2 w-1/5">
+                    <a :href="`/profile/${props.unreadNotification.data.user.username}`"><img :src="`/storage/${props.unreadNotification.data.user.picture.url}`" class="w-12 rounded-full"/></a>
             </div>
             <div class="text-sm flex-grow w-full">
-                <p class="font-d font-bold">{{postUser.name}}</p>
-                <p class="leading-3">{{notificationText}}</p>
-                <small class="text-gray-500"><vue-moments-ago v-bind:date="props.created_at" prefix="" affix="" elementStyle="font-size: 10px; line-height: 1"></vue-moments-ago></small>
+                <p><span class="font-d font-bold">{{props.unreadNotification.data.user.name}}</span> {{notificationText}}</p>
+                <small class="text-gray-500"><vue-moments-ago v-bind:date="props.unreadNotification.created_at" prefix="" affix="" elementStyle="font-size: 10px; line-height: 1"></vue-moments-ago></small>
             </div>
-            <div class="text-blue-700 p-2 cursor-pointer flex items-center justify-center w-1/5" v-if="isFriendRequestAccepted">
+            <div class="text-blue-700 p-2 cursor-pointer flex items-center justify-center w-1/5" v-if="isFriendRequest && !isFriendRequestAccepted" @click.stop="acceptFriend">
                 <i class="fas fa-user-plus"></i>
             </div>
         </div>
     </div>
-    <!-- @else
-        <a href="/posts/{{$notification->data['post']['id']}}" class="">
-            <div class="p-1 flex">
-                <div class="imageDiv mr-2">
-                    <img src="{{asset('storage/' . $notification->data['user']['profile_picture'])}}"
-                        class="w-8 mt-1 rounded-full" alt="">
-                </div>
-                <div class="text-xs">
-                    <strong class="mr-2">{{$notification->data['user']['name']}}</strong>
-                    <p>{{$text}}</p>
-                    <small class="text-gray-500">{{$notification->created_at->diffForHumans()}}</small>
-                </div> 
-            </div>
-        </a>
-    @endif -->
 </div>
 </template>
 
@@ -42,20 +24,19 @@ export default {
     props: ['props'],
     data(){
         return{
-            postData: {},
-            postUser: {},
             notificationText: "",
             isFriendRequest: false,
             isFriendRequestAccepted: false,
+            csrf: document.head.querySelector('meta[name="csrf-token"]').content,
+
             notificationTypes: {
                 POST_LIKED: "App\\Notifications\\PostLikedNotification",
-                COMMENT_LIKED: "App\\Notifications\\PostLikedNotification",
-                REPLY_LIKED: "App\\Notifications\\PostLikedNotification",
-                PICTURE_LIKED: "App\\Notifications\\PostLikedNotification",
+                COMMENT_LIKED: "App\\Notifications\\CommentLikedNotification",
+                PICTURE_LIKED: "App\\Notifications\\PictureLikedNotification",
 
                 POST_COMMENTED: "App\\Notifications\\PostCommentedNotification",
                 PICTURE_COMMENTED: "App\\Notifications\\PictureCommentedNotification",
-                COMMENT_REPLIED: "App\\Notifications\\PostCommentedNotification",
+                COMMENT_REPLIED: "App\\Notifications\\CommentRepliedNotification",
 
                 FRIEND_ACCEPTED: "App\\Notifications\\FriendRequestAcceptedNotification",
                 NEW_FRIEND_REQUEST:"App\\Notifications\\FriendRequestNotification",
@@ -64,41 +45,84 @@ export default {
         }
     },
     beforeMount(){
+        // console.log(this.props.unreadNotification.type)
+        this.prepareNotification(this.props.unreadNotification.type)
         
-        this.postData = this.props.data.post,
-        this.postUser = this.props.data.user,
-        this.prepareNotification()
+    },
+    mounted(){
+        if(this.isFriendRequest){
+            setTimeout(() => this.checkIfFriendshipAccepted(),100)
+        }
     },
     methods:{
-        prepareNotification(){
-            console.log(this.notificationTypes.POST_LIKED)
-            switch(this.props.type){
+        prepareNotification(notificationType){
+            switch(notificationType){
+                //post notifications
                 case (this.notificationTypes.POST_LIKED):
                     this.notificationText = "liked your Post!"
                     return
                 case (this.notificationTypes.POST_COMMENTED):
                     this.notificationText = "commented to your Post!"
                     return
+                //friendrequest notifications
                 case (this.notificationTypes.NEW_FRIEND_REQUEST):
+                    this.isFriendRequest = true
                     this.notificationText = "wants to be your friend!"
-                    this.checkIfFriendshipAccepted()
+                    return
+                case (this.notificationTypes.FRIEND_ACCEPTED):
+                    this.notificationText = "is now your friend!"
+                    return
+                //comment notifications
+                case (this.notificationTypes.COMMENT_LIKED):
+                    this.notificationText = "liked your Comment!"
+                    return
+                case (this.notificationTypes.COMMENT_REPLIED):
+                    this.notificationText = "replied to your Comment!"
+                    return
+                //picture notifications
+                case (this.notificationTypes.PICTURE_LIKED):
+                    this.notificationText = "liked your Picture!"
+                    return
+                case (this.notificationTypes.PICTURE_COMMENTED):
+                    this.notificationText = "commented to your Picture!"
                     return
             }
         },
         checkIfFriendshipAccepted(){
-            this.props.user.friend_of.forEach(friendship => {
-                if(friendship.id == this.postUser.id){
-                    this.isFriendRequestAccepted = friendship.pivot.accepted_at != null ? true : false
-                    return
+            this.props.user.friend_of.forEach(friend => {
+                // console.log(friend.id == this.props.unreadNotification.data.user.id)
+                
+                if(friend.id == this.props.unreadNotification.data.user.id){
+                    console.log(friend)
+                    if(friend.pivot.accepted_at != null){
+                        console.log(friend)
+                        console.log('yes')
+                        return this.isFriendRequestAccepted = true
+                    }
+                    return this.isFriendRequestAccepted = false
                 }
             })
         },
-        openPost(){
-            //mark notification as read
-            axios.post(``)
-            //redirect to the post
-            window.location.href = `/posts/${this.postData.id}`
+        openNotificationEvent(data){
+
+            if(data.post){
+                return window.location.href = `/posts/${data.post.id}`
+            }
+            return window.location.href = `/profile/${data.user.username}`
+        },
+        acceptFriend(){
+            
+        const params = {
+            '_token': this.csrf,
+            'user_id': this.props.unreadNotification.data.user.id
         }
+        axios.post(`/api/acceptfriend`, params)
+            .then(resp =>  {
+                this.isFriendRequestAccepted = true 
+                alert('You have a new Friend!')
+            }) 
+            .catch(error => console.log(error.response))
+        },
     },
     components: {VueMomentsAgo}
 }

@@ -20,7 +20,9 @@ export default {
         }
     },
     mounted() {
-        this.props.isWritingReply ? this.$refs.input.focus() : null
+        setTimeout(() => {
+            this.$refs.input.focus()
+        }, 50); 
     },
     methods: {
         submit(){

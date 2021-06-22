@@ -1,12 +1,12 @@
 <template>
     <div>
         <AddPostToUser @newPost="addPost" :props="{
-            userProfile: props.userProfile,
+            profile: props.profile,
             csrf: props.csrf
         }" v-if="props.auth == true"/>
         <posts-component :props="{
             posts: posts,
-            user: props.userLoggedIn,
+            user: props.user,
             csrf: props.csrf,
             auth: props.auth,
             loading: isLoading
@@ -52,7 +52,7 @@
                 this.posts.unshift(post)
             },
             getPosts() {
-                axios.get(`/api/getuserposts?user_id=${this.props.userProfile.id}&page=${this.page}`)
+                axios.get(`/api/getuserposts?user_id=${this.props.profile.id}&page=${this.page}`)
                     .then(resp => {
                         this.posts = resp.data
                         this.page = this.page + 1
@@ -66,7 +66,7 @@
             },
             loadMorePosts() {
                 this.isLoading = true
-                axios.get(`/api/getuserposts?user_id=${this.props.userProfile.id}&page=${this.page}`)
+                axios.get(`/api/getmoreuserposts?user_id=${this.props.profile.id}&page=${this.page}`)
                     .then(resp => {
                         let posts = [...this.posts]
                         resp.data.forEach(post => posts.push(post))
@@ -79,7 +79,7 @@
                     .catch(err => console.log(err.response))
             },
             areMorePosts() {
-                axios.get(`/api/getuserposts?user_id=${this.props.userProfile.id}&page=${this.page}`)
+                axios.get(`/api/getmoreuserposts?user_id=${this.props.profile.id}&page=${this.page}`)
                     .then(resp => {
                         if (resp.data.length == 0) {
                             this.isMorePosts = false

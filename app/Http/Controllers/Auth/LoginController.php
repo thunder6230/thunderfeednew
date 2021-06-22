@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Mail\PWReset;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+
+use BeyondCode\EmailConfirmation\Traits\AuthenticatesUsers;
+use BeyondCode\EmailConfirmation\Traits\SendsPasswordResetEmails;
 
 class LoginController extends Controller
 {
@@ -29,7 +35,8 @@ class LoginController extends Controller
     public function store(Request $request){
         $this->validate($request, [
             'email' => 'required|max:255|email',
-            'password'=> 'required'
+            'password'=> 'required',
+            'path' => 'required|string'
         ]);
 
         $request->password = Hash::make($request->password);
@@ -40,6 +47,24 @@ class LoginController extends Controller
 
         }
         Auth::user()->createToken('user-access');
-        return response()->json(['success' => true, 'path' => '/posts']);
+        return response()->json(['success' => true, 'path' => $request->path]);
+    }
+
+    public function pwreset(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|max:255|email',
+            'path' => 'required|string'
+        ]);
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return response()->json($status);
+        // Mail::to($user->email)->send(new PWReset($user));
+    
+
+        
+        return response()->json(['success' => true]);
     }
 }

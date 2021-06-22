@@ -34,9 +34,13 @@ class CommentLiked extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.posts.comment_liked', [
-            'post' => $this->post,
-            'user'=> $this->user
+        
+        return $this->markdown('emails.email', [
+            'title' => 'You have a new Like!',
+            'message' => $this->user->name . ' liked your Comment. Click on the button to check it!',
+            'buttonText' => 'Check Comment',
+            'route' => 'posts.show',
+            'route_params' => [$this->post->id]
         ]);
     }
 }

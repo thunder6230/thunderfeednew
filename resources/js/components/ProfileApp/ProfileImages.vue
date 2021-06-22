@@ -13,9 +13,22 @@ export default {
     }
   },
   beforeMount(){
-    axios.get(`/api/user_pictures?user_id=${this.props.userProfile.id}`)
+    axios.get(`/api/user_pictures?user_id=${this.props.profile.id}`)
     .then(resp => this.pictures = resp.data)
     .catch(error => console.log(error.response))
+  },
+  mounted(){
+     if(this.props.pictureId > 0){
+       setTimeout(() => {
+         this.pictures.forEach((picture,index) => {
+           console.log('yes')
+           console.log(picture)
+           if(picture.id == this.props.pictureId){
+             return this.openModal(index)
+           }
+         })
+       }, 500);
+     }
   },
   methods: {
     openModal(pictureIndex){
@@ -23,7 +36,7 @@ export default {
         isModalOpen: true,
         pictures: this.pictures,
         currentPicture: pictureIndex,
-        user: this.props.userLoggedIn,
+        user: this.props.user,
         csrf: this.props.csrf,
         auth: this.props.auth,
       }

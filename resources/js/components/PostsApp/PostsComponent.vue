@@ -6,7 +6,7 @@
         user: props.user,
         csrf: props.csrf,
         auth: props.auth
-        }"/>
+        }" @openLogin="$emit('openLogin')"/>
 </div>
   
 </template>

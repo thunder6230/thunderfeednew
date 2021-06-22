@@ -41,8 +41,7 @@ class FriendRequestAcceptedNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'user' => $this->user,
-            'type' => 'accepted'
+            'user' => $this->user
         ];
     }
 }

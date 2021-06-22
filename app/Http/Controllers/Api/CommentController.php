@@ -3,12 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Comment;
 use App\Models\Picture;
+use App\Mail\PostCommented;
 use App\Models\PostComment;
+use App\Mail\CommentReplied;
 use Illuminate\Http\Request;
+use App\Mail\PictureCommented;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\PostCommentedNotification;
+use App\Notifications\CommentRepliedNotification;
+use App\Notifications\PictureCommentedNotification;
 
 class CommentController extends Controller
 {
@@ -37,7 +45,10 @@ class CommentController extends Controller
                 'url' => $imageName
             ]);
         }
-
+        if (Auth::user()->id != $comment->commentable->user->id) {
+            Mail::to($comment->user->email)->send(new PostCommented($comment->commentable, Auth::user()));
+            $comment->commentable->user->notify(new PostCommentedNotification($comment->commentable, User::with('picture')->find(Auth::user()->id)));
+        }
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'user',
@@ -75,7 +86,10 @@ class CommentController extends Controller
                 'url' => $imageName
             ]);
         }
-
+        if (Auth::user()->id != $comment->commentable->user->id) {
+            Mail::to($comment->user->email)->send(new PictureCommented($comment->commentable, Auth::user()));
+            $comment->commentable->user->notify(new PictureCommentedNotification($comment->commentable, User::with('picture')->find(Auth::user()->id)));
+        }
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'user',
@@ -111,7 +125,10 @@ class CommentController extends Controller
                 'url' => $imageName
             ]);
         }
-
+        if(Auth::user()->id != $comment->commentable->user->id) {
+            Mail::to($comment->user->email)->send(new CommentReplied($comment->commentable->commentable, Auth::user()));
+            $comment->commentable->user->notify(new CommentRepliedNotification($comment->commentable->commentable, User::with('picture')->find(Auth::user()->id)));
+        }
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'likes',

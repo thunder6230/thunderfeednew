@@ -17,7 +17,7 @@
 
 <script>
 export default {
-    props: ['csrf'],
+    props: ['props'],
     data(){
         return{
             errors: {},
@@ -29,7 +29,12 @@ export default {
             this.file = event.target.files[0]
         },
         submit(){
+            //check if logged in
+            if(!this.props.auth){
+                return this.$emit('openLogin')
+            }
             //we have to set content type for the file
+
             const config = {
                 'content-type': 'multipart/form-data'
             }
@@ -40,7 +45,7 @@ export default {
             if (this.file){
                 formData.append('file', this.file)
             }
-            formData.append('_token', this.csrf)
+            formData.append('_token', this.props.csrf)
             formData.append('body', this.$refs.body.value)
 
             /**
@@ -57,7 +62,7 @@ export default {
                     this.errors = error.response.data.errors
                 }
             })
-        }
+        },
     },
     computed: {
         validationErrors(){

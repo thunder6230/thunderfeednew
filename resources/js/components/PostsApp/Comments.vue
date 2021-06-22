@@ -7,7 +7,8 @@
             csrf: props.csrf,
             auth: props.auth,
         }" :class="{'hidden' : allCommentsHidden && index < props.comments.length - 2 }"
-            @removeComment="removeComment"/>
+            @removeComment="removeComment"
+            @openLogin="$emit('openLogin')"/>
     </ul>
     <p 
         v-on:click="showHideComments"
@@ -17,8 +18,9 @@
         postId: props.postId,
         user: props.user,
         csrf: props.csrf,
+        auth: props.auth,
         isWriteComment: props.isWriteComment
-    }" @newComment="addComment" v-if="props.auth == true"/>
+    }" @newComment="addComment" @openLogin="$emit('openLogin')"/>
 </div>
 </template>
 

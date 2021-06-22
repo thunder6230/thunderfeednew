@@ -1,13 +1,16 @@
 <template>
      <div class="container lg:w-8/12 m-auto pb-4">
-        <AddPostComponent v-if="auth" :csrf="csrf" @newPost="addPost" />
+        <AddPostComponent :props="{
+            csrf:csrf,
+            auth:auth
+            }" @newPost="addPost" @openLogin="checkAut"/>
         <posts-component :props="{
             posts: posts,
             user: user,
             csrf: csrf,
             auth: auth,
             loading: isLoading
-        }"></posts-component>
+        }" @openLogin="checkAut"></posts-component>
         <h1 v-if="isLoading" class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">Loading...</h1>
         <div v-if="posts.length > 0" class="w-full flex justify-center">
             <button
@@ -24,12 +27,16 @@
                 v-if="isMorePosts == false && isLoading == false"
                 class="text-center font-bold text-2xl text-blue-700 block m-auto py-4">There are no Posts yet</h1>
         </div>
-        <RegisterLoginModal />
+        <register-login-modal v-if="isModalActive" :props="{
+            isRegisterActive: isRegisterActive, 
+            isLoginActive:isLoginActive,
+            isModalActive:isModalActive,
+            loginMessage:loginMessage
+            }" @closeModal="resetModal" @changeModal="changeModal"></register-login-modal>
      </div>
 </template>
 <script>
 import AddPostComponent from './AddPost'
-import RegisterLoginModal from '../RegisterLoginModal/RegisterLoginModal.vue'
 export default {
     props: ['user'],
     data() {
@@ -39,7 +46,11 @@ export default {
             isMorePosts: false,
             page: 1,
             auth:false,
-            posts: []
+            posts: [],
+            isModalActive: false,
+            isRegisterActive: false,
+            isLoginActive: false,
+            loginMessage: false
         }
     },
     mounted(){
@@ -91,7 +102,31 @@ export default {
             .catch(err => console.log(err.response))
         },
         
+        openModal(type){
+            this.resetModal()
+            this.isModalActive = true
+            if(type == 'register'){
+                return this.isRegisterActive = true
+            } 
+            if(type == 'login'){
+                return this.isLoginActive = true
+            }
+        },
+        resetModal(){
+        this.isRegisterActive = false
+        this.isLoginActive = false
+        this.isModalActive = false
+        },
+        changeModal(event){
+            this.resetModal()
+            setTimeout(() => this.openModal(event), 50)
+        },
+        checkAut(){
+            this.loginMessage = true
+            this.openModal('login')
+        }
+        
     },
-    components: { AddPostComponent, RegisterLoginModal }
+    components: { AddPostComponent }
 }
 </script>

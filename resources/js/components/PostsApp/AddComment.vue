@@ -31,6 +31,9 @@ export default {
     },
     methods:{
         submit(){
+            if(!this.props.auth){
+                return this.$emit('openLogin')
+            }
             const formData = new FormData()
             if (this.file){
                 formData.append('file', this.file)

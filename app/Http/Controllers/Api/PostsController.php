@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Picture;
+use App\Mail\NewPostToUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use App\Notifications\NewPostToUserNotification;
 
 class PostsController extends Controller
 {
@@ -53,7 +58,8 @@ class PostsController extends Controller
     }
 
     public function show($id){
-        return response()->json(Post::findOrFail($id)->with(
+        $post_id = $id;
+        return response()->json(Post::findOrFail($id)->where('id', $post_id)->with(
             'user',
             'user.picture',
             'user_to',
@@ -82,6 +88,46 @@ class PostsController extends Controller
             'comments.replies.user.picture'
         )->first());
     }
+    public function loadMorePosts(Request $request){
+        $page = $request->page;
+        $limit = $page * 5;
+        $offset = $limit - 5;
+
+        return response()->json(Post::with(
+            'user',
+            'user.picture',
+            'user_to',
+            'user_to.picture',
+            'likes',
+            'pictures',
+            'pictures.user',
+            'pictures.comments',
+            'pictures.comments.user',
+            'pictures.comments.user.picture',
+            'pictures.comments.likes',
+            'pictures.comments.pictures',
+            'pictures.comments.replies',
+            'pictures.comments.replies.likes',
+            'pictures.comments.replies.user',
+            'pictures.comments.replies.user.picture',
+            'pictures.likes',
+            'comments',
+            'comments.user',
+            'comments.user.picture',
+            'comments.likes',
+            'comments.pictures',
+            'comments.replies',
+            'comments.replies.likes',
+            'comments.replies.user',
+            'comments.replies.user.picture'
+        )
+            ->orderBy('created_at', 'DESC')
+            ->skip($offset)
+            ->limit($limit)->get());
+
+    }
+
+
     public function getUserPosts(Request $request){
         $page = $request->page;
         $user_id = $request->user_id;
@@ -121,44 +167,6 @@ class PostsController extends Controller
             ->limit($limit)->get());
     }
    
-    public function loadMorePosts(Request $request){
-        $page = $request->page;
-        $limit = $page * 5;
-        $offset = $limit - 5;
-
-        return response()->json(Post::with(
-            'user',
-            'user.picture',
-            'user_to',
-            'user_to.picture',
-            'likes',
-            'pictures',
-            'pictures.user',
-            'pictures.comments',
-            'pictures.comments.user',
-            'pictures.comments.user.picture',
-            'pictures.comments.likes',
-            'pictures.comments.pictures',
-            'pictures.comments.replies',
-            'pictures.comments.replies.likes',
-            'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
-            'pictures.likes',
-            'comments',
-            'comments.user',
-            'comments.user.picture',
-            'comments.likes',
-            'comments.pictures',
-            'comments.replies',
-            'comments.replies.likes',
-            'comments.replies.user',
-            'comments.replies.user.picture'
-        )
-            ->orderBy('created_at', 'DESC')
-            ->skip($offset)
-            ->limit($limit)->get());
-
-    }
     public function loadMoreUserPosts(Request $request){
         $page = $request->page;
         $limit = $page * 5;
@@ -208,12 +216,12 @@ class PostsController extends Controller
             'file' => 'image|max:2048',
             'user_to_id' => '',
         ]);
-        
         $post = Auth::user()->posts()->create([
             'body' => $request->body,
             'user_to_id' => $request->user_to_id ?? null
             ]);
-            
+        
+        
         if ($request->file) {
             $imageName = "Pictures/" . time() . '.' . $request->file->extension();
             $request->file->storeAs('public/', $imageName);
@@ -224,8 +232,9 @@ class PostsController extends Controller
                 'url' => $imageName,
             ]);
         }
-        if (!$post) {
-            echo "Error";
+        if($post->user_to_id != null){
+            Mail::to($post->user->email)->send(new NewPostToUser($post, Auth::user()));
+            $post->user->notify(new NewPostToUserNotification($post, User::with('picture')->find(Auth::user()->id)));
         }
         return response()->json(Post::where('id',$post->id)->with(
             'user',
@@ -258,6 +267,7 @@ class PostsController extends Controller
             'comments.replies.user.picture'
         )->first());
     }
+
     public function userPictures(Request $request){
         $user_id = $request->user_id;
         return response()->json(Picture::where('user_id', $user_id)->with(
@@ -282,6 +292,8 @@ class PostsController extends Controller
         if(!$post){
             return "Error";
         }
+        $picPath = $post->pictures()->first()->url;
+        Storage::disk('public')->delete($picPath);
         $post->pictures()->delete();
         $post->delete();
         

@@ -10,7 +10,8 @@ class NotificationsController extends Controller
 {
     public function update(Request $request){
         $id = $request->notification_id;
-        return response()->json(Notification::where('id', $id));
+        Notification::find($id)->markAsRead();
+        //return response()->json(Notification::where('id', $id));
     }
     public function destroy(Request $request){
 

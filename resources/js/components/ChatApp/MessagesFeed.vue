@@ -7,7 +7,7 @@
             <li v-for="message in messages" 
                 :class="`m-2 ${message.user_id == contact.id ? 'text-left' : 'text-right'}`"
                 :key="message.id">
-                    <ul :class="`rounded-lg inline-block px-4 py-1 font-medium ${message.user_id == contact.id 
+                    <ul style="width: fit-content" :class="`rounded-lg inline-block px-4 py-1 font-medium ${message.user_id == contact.id 
                             ? 'bg-blue-700 text-white' 
                             : 'bg-white text-blue-700'}`">
                         <li>{{message.body}}</li>

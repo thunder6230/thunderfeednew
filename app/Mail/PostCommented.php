@@ -33,9 +33,13 @@ class PostCommented extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.posts.post_commented', [
-            'post' => $this->post,
-            'user' => $this->user
+        
+        return $this->markdown('emails.email', [
+            'title' => 'Your Post has a new comment!',
+            'message' => $this->user->name . ' commented to your Post. Click on the button to check it!',
+            'buttonText' => 'Check Post',
+            'route' => 'posts.show',
+            'route_params' => [$this->post->id]
         ]);
     }
 }

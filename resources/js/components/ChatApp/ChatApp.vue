@@ -1,7 +1,10 @@
 
 <template>
-    <div class="container bg-gray-200 h-4/6 relative shadow-lg" :style="{ minHeight: 600 + 'px'}">
-        <h1 class="text-2xl font-bold text-right">ThunderFeed Messenger</h1>
+    <div class="container bg-gray-200 h-4/6 relative shadow-lg rounded-lg" style="minHeight: 600px">
+        <div class="px-4 px-2 relative w-full">
+            <h1 class="absolute left-4 top-2 text-xl">{{selectedContact ? `Conversation with ${selectedContact.name}` : "Select a Contact!"}}</h1>
+            <h1 class="text-2xl font-bold text-right absolute right-4 top-2">ThunderFeed Messenger</h1>
+        </div>
         <div class="flex h-full absolute w-full top-0 pt-12 overflow-hidden">
             <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage" />
             <ContactList :contacts="contacts" @selected="startConversationWith" />
@@ -24,6 +27,7 @@ import ContactList from './ContactList'
         mounted() {
             Echo.private(`messages.${this.user.id}`)
                 .listen('NewMessage', (e => {
+                    console.log(e.message)
                     this.handleIncoming(e.message)
                 }))
             axios.get('/api/getfriends')

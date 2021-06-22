@@ -7,6 +7,8 @@ use App\Models\Post;
 use App\Models\Message;
 use App\Models\Picture;
 use App\Models\PostComment;
+use Illuminate\Auth\MustVerifyEmail as AuthMustVerifyEmail;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
@@ -15,9 +17,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, CanResetPassword;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +31,9 @@ class User extends Authenticatable
         'email',
         'password',
         'username',
-        'gender'
+        'gender',
+        'confirmed_at',
+        'confirmation_code'
     ];
 
     /**

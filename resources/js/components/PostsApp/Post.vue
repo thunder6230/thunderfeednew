@@ -47,7 +47,7 @@
             <p>{{ props.post.likes.length }} {{pluralize('Like', props.post.likes.length)}}</p>
             <p>{{ props.post.comments.length}} {{pluralize('Comment', props.post.comments.length)}}</p>
         </div>
-        <div v-if="props.user" class="flex items-center py-2 border-t border-blue-200 ">
+        <div class="flex items-center py-2 border-t border-blue-200 ">
                 
             <button v-if="isLikedByMe == false" type="button" 
             class="flex-1 text-blue-700 font-medium" @click="like">
@@ -67,7 +67,7 @@
             auth: props.auth,
             isMouseEnter: isMouseEnter,
             isWriteComment: isWriteComment,
-        }" @removeComment="removeComment"/>
+        }" @removeComment="removeComment" @openLogin="$emit('openLogin')"/>
     </div>
 
 </div>
@@ -121,6 +121,9 @@ export default {
             .catch(err => console.log(err))
         },
         like(){
+            if(!this.props.auth){
+                return this.$emit('openLogin')
+            }
             const params = {
                 'post_id': this.props.post.id,
                 '_token': this.props.csrf
