@@ -7,10 +7,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>ThunderFeed</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
+    <link href="https://thunderfeed.herokuapp.com/css/app.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
     
-    <script defer src="{{ asset('js/app.js') }}"></script>
+    <script defer src="https://thunderfeed.herokuapp.com/js/app.js'"></script>
 
 </head>
 
