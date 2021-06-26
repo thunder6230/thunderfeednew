@@ -6,6 +6,8 @@
 
 window.Vue = require('vue').default
 require('./bootstrap')
+
+import VueRandomColor from 'vue-randomcolor'
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -31,7 +33,9 @@ Vue.component('navbar', require('./components/Navbar/Navbar.vue').default)
 Vue.component('users-page', require('./components/UsersApp/UsersPage.vue').default)
 Vue.component('register-login-modal', require('./components/RegisterLoginModal/RegisterLoginModal.vue').default)
 Vue.component('about-us-page', require('./components/AboutUsPage/AboutUs.vue').default)
+Vue.component('notifications-page', require('./components/NotificationsPage/NotificationsPage.vue').default)
 
+Vue.use(VueRandomColor)
 
 
 /**

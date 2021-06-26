@@ -1,7 +1,7 @@
 <template>
 <form @submit.prevent="submit" class="flex pb-2 items-center">
         <div class="mr-2">
-            <img :src="`/storage/${props.user.picture.url}`" class="rounded-full w-8">
+            <img :src="`/storage/${props.user.pictures[props.user.pictures.length - 1].url}`" class="rounded-full w-8 h-8 object-cover">
         </div>
     <div class="bg-blue-50 rounded-lg">
         <input type="text" v-model="reply"

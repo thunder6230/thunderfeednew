@@ -5,8 +5,8 @@
     class="rounded-xl mb-4 p-4 bg-white border border-blue-200 shadow-lg">
     <div class="relative flex">
             <a :href="`/profile/${props.post.user.username}`" class="w-10 mr-2">
-                <img :src="`/storage/${props.post.user.picture.url}`"
-                    :alt="`${props.post.user.username}`" class="rounded-full w-10">
+                <img :src="`/storage/${props.post.user.pictures[props.post.user.pictures.length - 1].url}`"
+                    :alt="`${props.post.user.username}`" class="rounded-full w-10 h-10 object-cover">
             </a>
             <div class="flex flex-col justify-end">
                 <div class="text-lg leading-3 pb-0.5 text-lg leading-3 pb-0.5">

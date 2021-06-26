@@ -1,14 +1,14 @@
 <template>
-    <div class="contact_list w-4/12 min-h-full overflow-auto" ref="list"
+    <div class="contact_list w-4/12 min-h-full overflow-auto border-l border-blue-700" ref="list"
         @mouseenter="showsScrollbar"
         @mouseleave="hideScrollbar">
-        <ul class="divide-y divide-gray-100">
+        <ul class="divide-y divide-blue-100">
             <li
                 v-for="(contact) in sortByNewMessages" :key="contact.id" 
-                class="flex px-4 py-2 w-full  items-center hover:bg-gray-100 cursor-pointer relative"
+                class="flex px-4 py-2 w-full  items-center hover:bg-blue-600 cursor-pointer hover:text-white relative"
                 v-bind:data-id="contact.id"
                 @click="selectContact(contact)"
-                :class="{ 'bg-gray-100 border-x border-gray-500': contact == selected}"
+                :class="{ 'bg-blue-700 text-white': contact == selected}"
                 > 
                     <img v-bind:src="'/storage/' + contact.picture.url" alt="" class="rounded-full w-8 mr-5 ">
                     <p class="">{{ contact.name }}</p>
@@ -19,11 +19,6 @@
         </ul>
     </div>
 </template>
-<style>
-    ul{
-        width: 98%
-    }
-</style>
 
 <script>
     export default {

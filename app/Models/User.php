@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Message;
 use App\Models\Picture;
 use App\Models\PostComment;
+use App\Models\Relationship;
 use Illuminate\Auth\MustVerifyEmail as AuthMustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Laravel\Sanctum\HasApiTokens;
@@ -67,9 +68,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function comments(){
         return $this->hasMany(PostComment::class);
     }
-    public function picture()
+    public function pictures()
     {
-        return $this->morphOne(Picture::class, 'pictureable');
+        return $this->morphMany(Picture::class, 'pictureable');
     }
     public function unreadMessages(){
         return $this->hasMany(Message::class, 'user_to_id')->whereNull('read_at');
@@ -78,7 +79,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
     public function friends(){
-        return $this->belongsToMany(User::class, 'friend_user', 'user_id', 'friend_id');
+        return $this->belongsToMany(User::class, 'friend_user', 'user_id', 'friend_id')->withPivot('accepted_at');
         // ->withPivot('accepted')
         
     }
@@ -91,6 +92,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Message::class);
     }
 
+    public function relationship(){
+        return $this->belongsToMany(Relationship::class, 'relationship_user');
+    }
+    public function hobbies(){
+        return $this->belongsToMany(Hobby::class, 'hobby_user');
+    }
     
     
 }

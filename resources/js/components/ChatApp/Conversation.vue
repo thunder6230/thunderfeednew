@@ -1,5 +1,5 @@
 <template>
-    <div class="conversation w-10/12 bg-gray-100 relative h-full">
+    <div class="conversation w-10/12 bg-bg-white relative h-full">
         <MessagesFeed :contact="contact" :messages="messages" />
         <MessageComposer @send="sendMessage" />
     </div>

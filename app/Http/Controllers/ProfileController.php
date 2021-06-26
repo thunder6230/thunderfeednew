@@ -16,16 +16,18 @@ class ProfileController extends Controller
      */
     public function index(User $user){
         $pictureId = $id ?? -1;
-        $profileWithAllData = User::where('id', $user->id)->with('picture')->first();
+        $profileWithAllData = User::where('id', $user->id)->with('pictures',
+            'relationship')->first();
         $userWithAllData = 0;
         if (Auth::user()) {
             $userWithAllData = User::with(
-                'picture',
+                'pictures',
                 'unreadNotifications',
                 'notifications',
                 'unreadMessages',
                 'friends',
-                'friendOf'
+                'friendOf',
+                'relationship'
             )->find(Auth::user()->id);
         }
         return view('profile.index', compact('profileWithAllData', 'userWithAllData', 'pictureId'));
@@ -33,20 +35,24 @@ class ProfileController extends Controller
     public function showPicture(User $user, $id)
     {
         $pictureId = $id ?? -1;
-        $profileWithAllData = User::where('id', $user->id)->with('picture')->first();
+        $profileWithAllData = User::where('id', $user->id)->with('pictures', 'relationship')->first();
         $userWithAllData = 0;
         if (Auth::user()) {
             $userWithAllData = User::with(
-                'picture',
+                'pictures',
                 'unreadNotifications',
                 'notifications',
                 'unreadMessages',
                 'friends',
-                'friendOf'
+                'friendOf',
+                'relationship'
             )->find(Auth::user()->id);
         }
         return view('profile.index', compact('profileWithAllData', 'userWithAllData', 'pictureId'));
     }
+    
+
+    
     
 
 }

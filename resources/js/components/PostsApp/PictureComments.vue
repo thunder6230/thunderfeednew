@@ -1,6 +1,6 @@
 <template>
 <div class="py-2 border-t border-blue-200">
-    <ul class="flex flex-col overflow-auto">
+    <ul class="flex flex-col overflow-auto overflow-auto" style="height: auto; max-height: 100%; overflow: auto;">
         <Comment v-for="comment in props.comments" :key="comment.id" :props="{
             comment: comment,
             user: props.user,

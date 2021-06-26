@@ -2,7 +2,7 @@
   <div class="flex items-start relative pb-2 mb-2" ref="reply">
         <div class="mr-2 flex-none">
             <a :href="`/profile/${props.reply.username}`">
-                <img :src="`/storage/${props.reply.user.picture.url}`" alt="" class="rounded-full w-8">
+                <img :src="`/storage/${props.reply.user.pictures[props.reply.user.pictures.length - 1].url}`" alt="" class="rounded-full w-8 h-8 object-cover">
             </a>
         </div>
         <div class="bg-blue-50 px-2 pt-1 pb-2 rounded-lg">
@@ -125,7 +125,7 @@ export default {
             }
             axios.post(`/api/comments/update`, params)
             .then(resp => {
-                if(resp.data.success){
+                if(!resp.data.success){
                     alert('Something went wrong!')
                 }
 

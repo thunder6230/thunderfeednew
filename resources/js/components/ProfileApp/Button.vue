@@ -1,6 +1,9 @@
 <template>
-  <button :class="`flex-1 border-blue-700 ${props.activePage == props.page ? ' rounded-t-md text-blue-700 font-medium  text-lg border border-b-0 py-1 bg-gray-50' : 'py-0 border-0 border-b text-md opacity-50'}`" 
-            @click="onClickHandle" :data-page="`${props.page}`">{{buttonTitle}}</button>
+  <button 
+        :class="`flex-1 border-blue-700 ${props.activePage == props.page 
+        ? ' rounded-t-md text-blue-700 font-medium  text-lg border border-b-0 py-1 bg-gray-50' 
+        : 'py-0 border-0 border-b text-md opacity-50'}`"
+        @click="onClickHandle" :data-page="`${props.page}`">{{buttonTitle}}</button>
 </template>
 
 <script>

@@ -1,10 +1,10 @@
 <template>
   <div class="w-1/5">
     <div class="w-full">
-        <img :src="`/storage/${props.user.picture.url}`" alt="" class="w-full object-cover">
+        <a :href="`/profile/${props.user.username}`"><img :src="`/storage/${props.user.pictures[user.pictures.length - 1].url}`" alt="" class="w-full object-cover"></a>
     </div>
     <div class="text-center">
-      <p class="font-medium">{{props.user.name}}</p>
+      <a :href="`/profile/${props.user.username}`" class="font-medium">{{props.user.name}}</a>
     </div>
     <div v-if="props.userLoggedIn">
       <button @click="addFriend" v-if="!isMyfriend && !isPending"><i class="fas fa-user-plus"></i> Add Friend</button>

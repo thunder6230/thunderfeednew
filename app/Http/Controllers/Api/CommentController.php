@@ -11,12 +11,14 @@ use App\Models\PostComment;
 use App\Mail\CommentReplied;
 use Illuminate\Http\Request;
 use App\Mail\PictureCommented;
+use App\Mail\PictureCommentReplied;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\PostCommentedNotification;
 use App\Notifications\CommentRepliedNotification;
 use App\Notifications\PictureCommentedNotification;
+use App\Notifications\PictureCommentRepliedNotification;
 
 class CommentController extends Controller
 {
@@ -47,17 +49,17 @@ class CommentController extends Controller
         }
         if (Auth::user()->id != $comment->commentable->user->id) {
             Mail::to($comment->user->email)->send(new PostCommented($comment->commentable, Auth::user()));
-            $comment->commentable->user->notify(new PostCommentedNotification($comment->commentable, User::with('picture')->find(Auth::user()->id)));
+            $comment->commentable->user->notify(new PostCommentedNotification($comment->commentable, User::with('pictures')->find(Auth::user()->id)));
         }
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'user',
-            'user.picture',
+            'user.pictures',
             'likes',
             'replies',
             'replies.likes',
             'replies.user',
-            'replies.user.picture',
+            'replies.user.pictures',
         )->get();
         return response()->json($comment);
     }
@@ -88,17 +90,17 @@ class CommentController extends Controller
         }
         if (Auth::user()->id != $comment->commentable->user->id) {
             Mail::to($comment->user->email)->send(new PictureCommented($comment->commentable, Auth::user()));
-            $comment->commentable->user->notify(new PictureCommentedNotification($comment->commentable, User::with('picture')->find(Auth::user()->id)));
+            $comment->commentable->user->notify(new PictureCommentedNotification($comment->commentable, User::with('pictures')->find(Auth::user()->id)));
         }
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'user',
             'likes',
-            'user.picture',
+            'user.pictures',
             'replies',
             'replies.likes',
             'replies.user',
-            'replies.user.picture',
+            'replies.user.pictures',
         )->get();
         return response()->json($comment);
     }
@@ -125,19 +127,38 @@ class CommentController extends Controller
                 'url' => $imageName
             ]);
         }
-        if(Auth::user()->id != $comment->commentable->user->id) {
-            Mail::to($comment->user->email)->send(new CommentReplied($comment->commentable->commentable, Auth::user()));
-            $comment->commentable->user->notify(new CommentRepliedNotification($comment->commentable->commentable, User::with('picture')->find(Auth::user()->id)));
-        }
+        // dd($comment->commentable->commentable_type == "App\Models\Picture");
+        //Post Comment
+        if($comment->commentable->commentable_type == "App\Models\Comment"){
+            if(Auth::user()->id != $comment->commentable->user->id) {
+                Mail::to($comment->user->email)->send(new CommentReplied($comment->commentable->commentable, Auth::user()));
+                $comment->commentable->user->notify(new CommentRepliedNotification($comment->commentable->commentable, User::with('pictures')->find(Auth::user()->id)));
+            }
+            if ($comment->commentable->commentable->user_to_id) {
+                $user_to = User::find($$comment->commentable->commentable->user_to_id);
+                Mail::to($user_to->email)->send(new CommentReplied($comment->commentable->commentable, Auth::user()));
+                $user_to->notify(new CommentRepliedNotification($comment->commentable->commentable, User::with('pictures')->find(Auth::user()->id)));
+            }
+        };
+        //Picture Comment
+        if ($comment->commentable->commentable_type == "App\Models\Picture") {
+            if (Auth::user()->id != $comment->commentable->user->id) {
+                Mail::to($comment->user->email)->send(new PictureCommentReplied($comment->commentable->commentable, Auth::user()));
+                $comment->commentable->user->notify(new PictureCommentRepliedNotification($comment->commentable->commentable, User::with('pictures')->find(Auth::user()->id)));
+                
+            }
+        };
+
+
         $comment = Comment::where('id', $comment->id)->with(
             'pictures',
             'likes',
             'user',
-            'user.picture',
+            'user.pictures',
             'replies',
             'replies.likes',
             'replies.user',
-            'replies.user.picture',
+            'replies.user.pictures',
         )->first();
         return response()->json($comment);
     }

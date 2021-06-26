@@ -34,7 +34,7 @@
             <li class="mr-3" v-if="auth == true">
                 <a :href="`/profile/${user.username}`">
                     <div class="flex mr-3 justify-center items-center">
-                            <img :src="`/storage/${user.picture.url}`" alt="" class="rounded-full w-7 mr-2">
+                            <img :src="`/storage/${user.pictures[user.pictures.length - 1].url}`" alt="" class="rounded-full w-7 h-7 mr-2 object-cover">
                             {{user.name}}
                     </div>
                 </a>

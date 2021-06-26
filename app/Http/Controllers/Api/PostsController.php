@@ -27,31 +27,31 @@ class PostsController extends Controller
      
         return response()->json(Post::with(
             'user',
-            'user.picture',
+            'user.pictures',
             'user_to',
-            'user_to.picture',
+            'user_to.pictures',
             'likes',
             'pictures',
             'pictures.user',
             'pictures.comments',
             'pictures.comments.user',
-            'pictures.comments.user.picture',
+            'pictures.comments.user.pictures',
             'pictures.comments.likes',
             'pictures.comments.pictures',
             'pictures.comments.replies',
             'pictures.comments.replies.likes',
             'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
+            'pictures.comments.replies.user.pictures',
             'pictures.likes',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture'
+            'comments.replies.user.pictures'
         )
             ->orderBy('created_at', 'DESC')
             ->limit($limit)->get());
@@ -61,31 +61,31 @@ class PostsController extends Controller
         $post_id = $id;
         return response()->json(Post::findOrFail($id)->where('id', $post_id)->with(
             'user',
-            'user.picture',
+            'user.pictures',
             'user_to',
-            'user_to.picture',
+            'user_to.pictures',
             'likes',
             'pictures',
             'pictures.user',
             'pictures.comments',
             'pictures.comments.user',
-            'pictures.comments.user.picture',
+            'pictures.comments.user.pictures',
             'pictures.comments.likes',
             'pictures.comments.pictures',
             'pictures.comments.replies',
             'pictures.comments.replies.likes',
             'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
+            'pictures.comments.replies.user.pictures',
             'pictures.likes',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture'
+            'comments.replies.user.pictures'
         )->first());
     }
     public function loadMorePosts(Request $request){
@@ -95,31 +95,31 @@ class PostsController extends Controller
 
         return response()->json(Post::with(
             'user',
-            'user.picture',
+            'user.pictures',
             'user_to',
-            'user_to.picture',
+            'user_to.pictures',
             'likes',
             'pictures',
             'pictures.user',
             'pictures.comments',
             'pictures.comments.user',
-            'pictures.comments.user.picture',
+            'pictures.comments.user.pictures',
             'pictures.comments.likes',
             'pictures.comments.pictures',
             'pictures.comments.replies',
             'pictures.comments.replies.likes',
             'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
+            'pictures.comments.replies.user.pictures',
             'pictures.likes',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture'
+            'comments.replies.user.pictures'
         )
             ->orderBy('created_at', 'DESC')
             ->skip($offset)
@@ -135,31 +135,31 @@ class PostsController extends Controller
 
         return response()->json(Post::with(
             'user',
-            'user.picture',
+            'user.pictures',
             'user_to',
-            'user_to.picture',
+            'user_to.pictures',
             'likes',
             'pictures',
             'pictures.user',
             'pictures.comments',
             'pictures.comments.user',
-            'pictures.comments.user.picture',
+            'pictures.comments.user.pictures',
             'pictures.comments.likes',
             'pictures.comments.pictures',
             'pictures.comments.replies',
             'pictures.comments.replies.likes',
             'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
+            'pictures.comments.replies.user.pictures',
             'pictures.likes',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture'
+            'comments.replies.user.pictures'
         )
             ->where('user_id', $user_id)
             ->orWhere('user_to_id', $user_id)
@@ -175,9 +175,9 @@ class PostsController extends Controller
 
         return response()->json(Post::with(
             'user',
-            'user.picture',
+            'user.pictures',
             'user_to',
-            'user_to.picture',
+            'user_to.pictures',
             'likes',
             'pictures',
             'pictures.user',
@@ -185,23 +185,23 @@ class PostsController extends Controller
             'pictures.comments',
             'pictures.comments',
             'pictures.comments.user',
-            'pictures.comments.user.picture',
+            'pictures.comments.user.pictures',
             'pictures.comments.likes',
             'pictures.comments.pictures',
             'pictures.comments.replies',
             'pictures.comments.replies.likes',
             'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
+            'pictures.comments.replies.user.pictures',
             'pictures.likes',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture'
+            'comments.replies.user.pictures'
         )
             ->where('user_id', $user_id)
             ->orderBy('created_at', 'DESC')
@@ -233,14 +233,15 @@ class PostsController extends Controller
             ]);
         }
         if($post->user_to_id != null){
-            Mail::to($post->user->email)->send(new NewPostToUser($post, Auth::user()));
-            $post->user->notify(new NewPostToUserNotification($post, User::with('picture')->find(Auth::user()->id)));
+            $user_to = User::find($post->user_to_id);
+            Mail::to($user_to->email)->send(new NewPostToUser($post, Auth::user()));
+            $user_to->notify(new NewPostToUserNotification($post, User::with('pictures')->find(Auth::user()->id)));
         }
         return response()->json(Post::where('id',$post->id)->with(
             'user',
-            'user.picture',
+            'user.pictures',
             'user_to',
-            'user_to.picture',
+            'user_to.pictures',
             'likes',
             'pictures',
             'pictures.user',
@@ -249,22 +250,22 @@ class PostsController extends Controller
             'pictures.comments',
             'pictures.comments',
             'pictures.comments.user',
-            'pictures.comments.user.picture',
+            'pictures.comments.user.pictures',
             'pictures.comments.likes',
             'pictures.comments.pictures',
             'pictures.comments.replies',
             'pictures.comments.replies.likes',
             'pictures.comments.replies.user',
-            'pictures.comments.replies.user.picture',
+            'pictures.comments.replies.user.pictures',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture'
+            'comments.replies.user.pictures'
         )->first());
     }
 
@@ -273,17 +274,17 @@ class PostsController extends Controller
         return response()->json(Picture::where('user_id', $user_id)->with(
             'user',
             'likes',
-            'user',
+            'user.pictures',
             'comments',
             'comments',
             'comments.user',
-            'comments.user.picture',
+            'comments.user.pictures',
             'comments.likes',
             'comments.pictures',
             'comments.replies',
             'comments.replies.likes',
             'comments.replies.user',
-            'comments.replies.user.picture',
+            'comments.replies.user.pictures',
         )->get());
     }
 

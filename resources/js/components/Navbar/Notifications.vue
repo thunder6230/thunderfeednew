@@ -7,7 +7,7 @@
             user: props.user}"
         />
         <div class="py-1 px-2 bg-white text-center text-blue-700 hover:bg-blue-100">
-            <a :href="`/${props.user.username}/notifications`" class="font-medium">All Notifications</a>
+            <a href="/notifications" class="font-medium">All Notifications</a>
         </div>
     </ul>
 </div>

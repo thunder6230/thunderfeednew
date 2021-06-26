@@ -62,7 +62,7 @@ export default {
         },
         addReply(reply){
             this.props.replies.push(reply)
-            this.isWritingReply = false
+            this.$emit('closeReply')
         },
         removeComment(id){
             this.$emit('removeComment', id)

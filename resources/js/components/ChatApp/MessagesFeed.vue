@@ -1,5 +1,5 @@
 <template>
-    <div class="max-h-full absolute bottom-12 top-4 w-full" ref="feed"  
+    <div class="max-h-full h-auto absolute bottom-12 top-4 w-full " ref="feed"  
         @click="showMessageTime"
         @mouseenter="showsScrollbar"
         @mouseleave="hideScrollbar">
@@ -9,7 +9,7 @@
                 :key="message.id">
                     <ul style="width: fit-content" :class="`rounded-lg inline-block px-4 py-1 font-medium ${message.user_id == contact.id 
                             ? 'bg-blue-700 text-white' 
-                            : 'bg-white text-blue-700'}`">
+                            : 'bg-gray-100 text-blue-700'}`">
                         <li>{{message.body}}</li>
                         <li v-if="message.created_at" class="font-xs leading-3 font-extralight hidden" id="messageTime"><vue-moments-ago prefix="sent" suffix="ago" v-bind:date="message.created_at" lang="en"></vue-moments-ago></li>
                     </ul>

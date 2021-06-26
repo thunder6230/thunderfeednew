@@ -1,7 +1,8 @@
 
 <template>
-    <div class="container bg-gray-200 h-4/6 relative shadow-lg rounded-lg" style="minHeight: 600px">
-        <div class="px-4 px-2 relative w-full">
+    <div class="container bg-white h-full w-full relative shadow-lg rounded-lg">
+    <!-- <div class="container bg-gray-200 h-4/6 relative shadow-lg rounded-lg" style="minHeight: 600px"> -->
+        <div class="px-4 px-2 relative w-full border-b-2 border-blue-700 h-12">
             <h1 class="absolute left-4 top-2 text-xl">{{selectedContact ? `Conversation with ${selectedContact.name}` : "Select a Contact!"}}</h1>
             <h1 class="text-2xl font-bold text-right absolute right-4 top-2">ThunderFeed Messenger</h1>
         </div>
@@ -45,6 +46,7 @@ import ContactList from './ContactList'
                 })
             },
             saveNewMessage(message){
+                console.log(message)
                 this.messages.push(message)
             },
             handleIncoming(message) {

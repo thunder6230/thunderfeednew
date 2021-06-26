@@ -41,6 +41,7 @@ Route::get('/posts/{id}', [PostController::class, 'show'] )->name('posts.show');
 Route::get('/about', [AboutController::class, 'index'] );
 Route::get('/profile/{user:username}', [ProfileController::class, 'index'])->name('profile');
 Route::get('/profile/{user:username}/pictures/{id}', [ProfileController::class, 'showPicture'])->name('profile.picture');
+Route::get('/profile/{user:username}/settings', [ProfileController::class, 'showSettings'])->name('profile.settings');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('user.notifications');
 

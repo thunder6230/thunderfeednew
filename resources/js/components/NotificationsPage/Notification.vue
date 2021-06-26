@@ -1,27 +1,15 @@
 <template>
-  <!-- <li class="text-black"><a :href="`/posts/${postData.id}`">Notification</a></li> -->
-  <div class="text-black border-b border-blue-200 w-full hover:bg-blue-100 cursor-pointer" @click="openNotificationEvent(props.unreadNotification.data)">
-    <div class="flex">
-        <div class="p-1 flex items-center justify-center w-full">
-            <div class="mr-2 w-1/5">
-                    <a :href="`/profile/${props.unreadNotification.data.user.username}`"><img :src="`/storage/${props.unreadNotification.data.user.pictures[props.unreadNotification.data.user.pictures.length - 1].url}`" class="w-12 rounded-full"/></a>
-            </div>
-            <div class="text-sm flex-grow w-full">
-                <p><span class="font-d font-bold">{{props.unreadNotification.data.user.name}}</span> {{notificationText}}</p>
-                <small class="text-gray-500"><vue-moments-ago v-bind:date="props.unreadNotification.created_at" prefix="" affix="" elementStyle="font-size: 10px; line-height: 1"></vue-moments-ago></small>
-            </div>
-            <div class="text-blue-700 p-2 cursor-pointer flex items-center justify-center w-1/5" v-if="isFriendRequest && !isFriendRequestAccepted" @click.stop="acceptFriend">
-                <i class="fas fa-user-plus"></i>
-            </div>
-        </div>
-    </div>
-</div>
+  <div class="w-full flex">
+      <a :href="`/profile/${user.username}`"><img :src="`/storage/${user.pictures[user.pictures.length - 1].url}`" alt=""></a>
+      <div>
+          <a :href="`/profile/${user.username}`">{{user.name}}</a> {{notificationText}}
+      </div>
+  </div>
 </template>
 
 <script>
-import VueMomentsAgo from 'vue-moments-ago'
 export default {
-    props: ['props'],
+    props:['notification', 'user'],
     data(){
         return{
             notificationText: "",
@@ -39,15 +27,15 @@ export default {
                 PICTURE_COMMENTED: "App\\Notifications\\PictureCommentedNotification",
                 COMMENT_REPLIED: "App\\Notifications\\CommentRepliedNotification",
                 PICTURE_COMMENT_REPLIED: "App\\Notifications\\PictureCommentRepliedNotification",
+
                 FRIEND_ACCEPTED: "App\\Notifications\\FriendRequestAcceptedNotification",
                 NEW_FRIEND_REQUEST:"App\\Notifications\\FriendRequestNotification",
             }
-
         }
     },
-    beforeMount(){
+     beforeMount(){
         // console.log(this.props.unreadNotification.type)
-        this.prepareNotification(this.props.unreadNotification.type)
+        this.prepareNotification(this.notification.type)
         
     },
     mounted(){
@@ -115,9 +103,6 @@ export default {
             if(data.post){
                 return window.location.href = `/posts/${data.post.id}`
             }
-            if(data.picture){
-                return window.location.href = `/profile/${data.picture.user.username}/pictures/${data.picture.id}`
-            }
             return window.location.href = `/profile/${data.user.username}`
         },
         acceptFriend(){
@@ -133,10 +118,10 @@ export default {
             }) 
             .catch(error => console.log(error.response))
         },
-    },
-    components: {VueMomentsAgo}
+    }
 }
 </script>
 
 <style>
+
 </style>

@@ -23,7 +23,7 @@ class MessagesController extends Controller
         $userWithAllData = 0;
         if (Auth::user()) {
             $userWithAllData = User::with(
-                'picture',
+                'pictures',
                 'unreadNotifications',
                 'notifications',
                 'unreadMessages',

@@ -14,7 +14,7 @@ class AboutController extends Controller
         $userWithAllData = 0;
         if (Auth::user()) {
             $userWithAllData = User::where('id', Auth::user()->id)->with(
-                'picture',
+                'pictures',
                 'unreadNotifications',
                 'notifications',
                 'unreadMessages',

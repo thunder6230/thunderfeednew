@@ -3,7 +3,7 @@
         <div class="flex">
             <div class="mr-2 flex-none">
                 <a :href="`/profile/${props.comment.user.username}`">
-                    <img :src="`/storage/${props.comment.user.picture.url}`" alt="" class="rounded-full w-8">
+                    <img :src="`/storage/${props.comment.user.pictures[props.comment.user.pictures.length - 1].url}`" alt="" class="rounded-full w-8 h-8 object-cover">
                 </a>
             </div>
             <div class="bg-blue-200 px-2 pt-1 pb-2 rounded-lg relative">
